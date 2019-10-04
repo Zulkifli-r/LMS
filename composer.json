@@ -9,10 +9,13 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
+        "barryvdh/laravel-cors": "^0.11.4",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.0",
         "laravel/passport": "^7.5",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "spatie/laravel-medialibrary": "^7.14",
+        "spatie/laravel-permission": "^3.0"
     },
     "require-dev": {
         "facade/ignition": "^1.4",
@@ -38,7 +41,8 @@
         "classmap": [
             "database/seeds",
             "database/factories"
-        ]
+        ],
+        "files": [ "app/Helpers/ApiResponse.php" ]
     },
     "autoload-dev": {
         "psr-4": {
