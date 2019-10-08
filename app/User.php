@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,7 +13,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia
 {
-    use Notifiable, HasRoles, HasMediaTrait, HasApiTokens;
+    use Notifiable, HasRoles, HasMediaTrait, HasApiTokens, Sluggable;
 
     /**
      * The attributes that are mass assignable.
@@ -42,4 +43,24 @@ class User extends Authenticatable implements HasMedia
     ];
 
     protected $guard_name = 'api';
+
+    public function classrooms()
+    {
+        return $this->belongsToMany('App\Classroom');
+    }
+
+    public function category()
+    {
+        return $this->morphToMany('App\Category', 'categorizable');
+    }
+
+    public function classroomUsers()
+    {
+        return $this->hasMany( 'App\ClassroomUser' );
+    }
+
+    public function sluggable()
+    {
+        return [ 'username' => [ 'source' => [ 'name' ] , 'separator' => '.' ] ];
+    }
 }
