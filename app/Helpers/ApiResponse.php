@@ -14,6 +14,9 @@ if (!function_exists('httpResponse')) {
             case 200:
                 $status = 'OK';
                 break;
+            case 400:
+                $status = 'BAD REQUEST';
+                break;
             case 401:
                 $status = 'UNAUTORIZED';
                 break;
