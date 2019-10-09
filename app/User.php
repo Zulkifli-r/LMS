@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia
 {
-    use Notifiable, HasRoles, HasMediaTrait, HasApiTokens, Sluggable;
+    use Notifiable, HasRoles, HasMediaTrait, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -59,8 +58,8 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany( 'App\ClassroomUser' );
     }
 
-    public function sluggable()
+    public function getRoleAttribute()
     {
-        return [ 'username' => [ 'source' => [ 'name' ] , 'separator' => '.' ] ];
+        return $this->roles->pluck('name');
     }
 }
