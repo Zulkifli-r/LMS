@@ -48,10 +48,10 @@ class InstallRoles extends Command
         app()['cache']->forget('spatie.permission.cache');
 
         $this->info( 'Installing roles' );
-        Role::create([ 'name' => 'super', 'guard_name' => 'api' ]);
+        Role::create([ 'name' => 'user', 'guard_name' => 'api' ]);
         Role::create([ 'name' => 'admin', 'guard_name' => 'api']);
+        Role::create([ 'name' => 'super', 'guard_name' => 'api']);
         Role::create([ 'name' => 'teacher', 'guard_name' => 'api' ]);
         Role::create([ 'name' => 'student', 'guard_name' => 'api' ]);
-
     }
 }
