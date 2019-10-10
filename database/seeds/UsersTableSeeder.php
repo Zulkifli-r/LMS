@@ -16,13 +16,12 @@ class UsersTableSeeder extends Seeder
         DB::table( 'model_has_roles' )->truncate();
         DB::table( 'media' )->where( 'model_type', 'App\User' )->delete();
 
-        $exampleAvatars = collect( Storage::disk( 'local' )->files( 'example-avatars' ) );
         collect( Storage::disk( 'public' )->allDirectories() )->each( function ( $directory )
         {
             Storage::disk( 'public' )->deleteDirectory( $directory );
         } );
 
-        factory( \App\User::class, 100 )->create()->each( function ( $user ) use ( $exampleAvatars ) {
+        factory( \App\User::class, 100 )->create()->each( function ( $user ) {
             $roleLottery = rand( 0, 20 );
 
             if ( $roleLottery == 0 )

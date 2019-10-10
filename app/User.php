@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
@@ -61,5 +62,12 @@ class User extends Authenticatable implements HasMedia
     public function getRoleAttribute()
     {
         return $this->roles->pluck('name');
+    }
+
+    public function generateAvatar()
+    {
+        $avatarPath = Storage::disk('public')->path('').'/'.'avatar-'.$this->id.'.png';
+        \Avatar::create($this->name)->save($avatarPath,100);
+        $this->addMedia($avatarPath )->toMediaCollection( 'avatar','public' );
     }
 }

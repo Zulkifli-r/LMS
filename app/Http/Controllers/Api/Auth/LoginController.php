@@ -7,7 +7,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
@@ -38,24 +41,7 @@ class LoginController extends Controller
         if ($this->attemptLogin($request)) {
             $user = $request->user();
 
-            $tokenResult = $user->createToken('Personal Access Token');
-            $token = $tokenResult->token;
 
-            if ($request->remember_me)
-                $token->expires_at = Carbon::now()->addMinutes(5);
-
-            $token->save();
-
-            return apiResponse(200, [
-                'name' => $user->name,
-                'email' => $user->email,
-                'avatar' => count($user->getMedia('avatar')) ? asset($user->getMedia('avatar')->first()->getUrl()) : null,
-                'access_token' => $token->id,
-                'token_type' => 'Bearer',
-                'expires_at' => Carbon::parse(
-                    $tokenResult->token->expires_at
-                )->toDateTimeString()
-            ] );
         }
 
         // If the login attempt was unsuccessful we will increment the number of attempts
@@ -103,6 +89,52 @@ class LoginController extends Controller
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60) ] )
             );
+    }
+
+    public function handleProviderCallback(Request $request)
+    {
+        $providerInfo = Socialite::driver($request->provider)->userFromToken($request->token);
+
+        $user = \App\User::where('email', $providerInfo->email)->first();
+
+        if (!$user) {
+            // register user
+            $user = new \App\User();
+            $user->name = $providerInfo->name;
+            $user->email = $providerInfo->email;
+            $user->email_verified_at = \Carbon\Carbon::now();
+            $user->password = Hash::make(Str::random(20));
+            $user->is_provider = true;
+
+            $user->assignRole(['user']);
+            $user->addMediaFromUrl($providerInfo->avatar)->toMediaCollection('avatar');
+
+            $user->save();
+
+            // fire registered user event
+        }
+
+        return $this->loggingIn($user);
+
+    }
+
+    private function loggingIn($user)
+    {
+        $token = $user->createToken('User personal access token');
+        $token->token->expires_at = Carbon::now()->addMinutes(5);
+
+        return apiResponse(200, [
+            'name' => $user->name,
+            'email' => $user->email,
+            'email_verified' => $user->email_verified_at ? true:false,
+            'avatar' => count($user->getMedia('avatar')) ? asset($user->getMedia('avatar')->first()->getUrl()) : null,
+            'roles' => $user->role,
+            'access_token' => $token->accessToken,
+            'token_type' => 'Bearer',
+            'expires_at' => Carbon::parse(
+                $token->token->expires_at
+            )->toDateTimeString()
+        ] );
     }
 
 }
