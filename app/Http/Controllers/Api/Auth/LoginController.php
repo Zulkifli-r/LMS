@@ -112,6 +112,7 @@ class LoginController extends Controller
             $user->save();
 
             // fire registered user event
+            event(new UserRegistered($user));
         }
 
         return $this->loggingIn($user);
