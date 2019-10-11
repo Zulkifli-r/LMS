@@ -14,6 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
 Route::group(['domain' => env('FE_VERIFY_ROUTE','localhost:3000/verify')], function()
 {
     Route::get('/', function()
