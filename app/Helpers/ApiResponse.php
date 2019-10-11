@@ -1,7 +1,7 @@
 <?php
 
 if (!function_exists('apiResponse')) {
-    function apiResponse($code, $data, $message = null){
+    function apiResponse($code, $data = null, $message = null){
         $res_data = separatePagingAndData($data);
         $res_diag = httpResponse($code, $message);
         return response(array_merge($res_data, $res_diag), 200);

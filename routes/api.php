@@ -26,6 +26,7 @@ Route::group( ['namespace' => 'Api'], function(){
         Route::post('register', 'RegisterController@register');
         Route::post('provider-callback', 'LoginController@handleProviderCallback');
         Route::get('verify-email','VerificationController@verify');
-
+        Route::post('forgot-password', 'ForgotPasswordController@sendResetLinkEmail');
+        Route::get('reset-password', 'ResetPasswordController@reset');
     });
 });

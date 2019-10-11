@@ -32,7 +32,7 @@ class UserRegistered extends Mailable
     public function build()
     {
         return $this
-                -> to($this->user->email)
+                ->to($this->user->email)
                 ->from('support@gakken-idn.co.id', 'Gakken Indonesia')
                 ->subject('Selamat Bergabung di Genius LMS')
                 ->view('emails.user.registered');

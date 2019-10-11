@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Notifications\ResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -69,5 +70,16 @@ class User extends Authenticatable implements HasMedia
         $avatarPath = Storage::disk('public')->path('').'/'.'avatar-'.$this->id.'.png';
         \Avatar::create($this->name)->save($avatarPath,100);
         $this->addMedia($avatarPath )->toMediaCollection( 'avatar','public' );
+    }
+
+        /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPassword($token));
     }
 }
