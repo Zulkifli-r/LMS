@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Laravel\Passport\Passport;
 use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
@@ -28,7 +29,6 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $validator = $this->validateLogin($request->all());
-
         if ($validator->fails()) {
             return apiResponse(
                 400,null,$validator->errors()
@@ -48,7 +48,7 @@ class LoginController extends Controller
         if ($this->attemptLogin($request)) {
             $user = $request->user();
 
-
+            return $this->loggingIn($user);
         }
 
         // If the login attempt was unsuccessful we will increment the number of attempts
@@ -59,11 +59,11 @@ class LoginController extends Controller
         return apiResponse(404,null,'user not found');
     }
 
-    protected function validateLogin($data)
+    protected function validateLogin(array $data)
     {
         return Validator::make($data,
             [
-                $this->username() => 'required|string',
+                $this->username() => 'email|required|string',
                 'password' => 'required|string',
                 'remember_me' => 'boolean'
             ]
@@ -121,8 +121,11 @@ class LoginController extends Controller
 
     private function loggingIn($user)
     {
+        Passport::tokensExpireIn(now()->addMinutes(1));
+        Passport::refreshTokensExpireIn(now()->addMinutes(1));
+
         $token = $user->createToken('User personal access token');
-        $token->token->expires_at = Carbon::now()->addMinutes(5);
+        // $token->token->expires_at = Carbon::now()->addMinutes(5);
 
         return apiResponse(200, [
             'name' => $user->name,

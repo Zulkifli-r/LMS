@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Passport\Passport;
 
 class RegisterController extends Controller
 {
@@ -36,6 +37,10 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
+
+        Passport::tokensExpireIn(now()->addMinutes(1));
+        Passport::refreshTokensExpireIn(now()->addMinutes(1));
+
         $validator = $this->validator($request->all());
 
         if($validator->fails()){
@@ -45,6 +50,7 @@ class RegisterController extends Controller
         $user = $this->create($request->all());
 
         $token = $user->createToken('User personal access token');
+
 
         event(new UserRegistered($user));
         return apiResponse(200, [
