@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -26,7 +27,13 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
-        $this->validateLogin($request);
+        $validator = $this->validateLogin($request->all());
+
+        if ($validator->fails()) {
+            return apiResponse(
+                400,null,$validator->errors()
+            );
+        }
 
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
         // the login attempts for this application. We'll key this by the username and
@@ -52,22 +59,15 @@ class LoginController extends Controller
         return apiResponse(404,null,'user not found');
     }
 
-    /**
-     * Validate the user login request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    protected function validateLogin(Request $request)
+    protected function validateLogin($data)
     {
-
-        $request->validate([
-            $this->username() => 'required|string',
-            'password' => 'required|string',
-            'remember_me' => 'boolean'
-        ]);
+        return Validator::make($data,
+            [
+                $this->username() => 'required|string',
+                'password' => 'required|string',
+                'remember_me' => 'boolean'
+            ]
+        );
     }
 
     /**
