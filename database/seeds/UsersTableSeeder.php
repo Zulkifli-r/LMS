@@ -13,29 +13,27 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         DB::table( 'users' )->truncate();
-        DB::table( 'model_has_roles' )->delete();
-        DB::table( 'media' )->where( 'model_type', 'user' )->delete();
+        DB::table( 'model_has_roles' )->truncate();
+        DB::table( 'media' )->where( 'model_type', 'App\User' )->delete();
 
-        $exampleAvatars = collect( Storage::disk( 'local' )->files( 'example-avatars' ) );
         collect( Storage::disk( 'public' )->allDirectories() )->each( function ( $directory )
         {
             Storage::disk( 'public' )->deleteDirectory( $directory );
         } );
 
-        factory( \App\User::class, 500 )->create()->each( function ( $user ) use ( $exampleAvatars ) {
+        factory( \App\User::class, 100 )->create()->each( function ( $user ) {
             $roleLottery = rand( 0, 20 );
 
             if ( $roleLottery == 0 )
                 $user->assignRole([ 'super' ]);
             elseif ( $roleLottery < 2 )
                 $user->assignRole([ 'admin' ]);
-            elseif ( $roleLottery < 5 )
-                $user->assignRole([ 'teacher' ]);
             else
-                $user->assignRole([ 'student' ]);
+                $user->assignRole([ 'user' ]);
 
-            if ( rand( 0, 3 ) )
-                $user->addMedia( storage_path( 'app/' . $exampleAvatars->random() ) )->preservingOriginal()->toMediaCollection( 'avatar','public' );
+            $avatarPath = Storage::disk('public')->path('').'/'.'avatar-'.$user->id.'.png';
+            \Avatar::create($user->name)->save($avatarPath,100);
+            $user->addMedia($avatarPath )->toMediaCollection( 'avatar','public' );
         } );
     }
 }

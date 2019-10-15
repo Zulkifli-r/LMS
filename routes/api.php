@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+// Route::domain('localhost:3000/verify', function(){ return null; } )->name('email.verification.verify');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -23,5 +23,10 @@ Route::group( ['namespace' => 'Api'], function(){
     Route::group( ['namespace' => 'Auth'], function(){
         Route::post('login', 'LoginController@login');
 
+        Route::post('register', 'RegisterController@register');
+        Route::post('provider-callback', 'LoginController@handleProviderCallback');
+        Route::get('verify-email','VerificationController@verify');
+        Route::post('forgot-password', 'ForgotPasswordController@sendResetLinkEmail');
+        Route::get('reset-password', 'ResetPasswordController@reset');
     });
 });

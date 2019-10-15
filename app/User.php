@@ -2,10 +2,11 @@
 
 namespace App;
 
-use Cviebrock\EloquentSluggable\Sluggable;
+use App\Notifications\ResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
@@ -13,7 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia
 {
-    use Notifiable, HasRoles, HasMediaTrait, HasApiTokens, Sluggable;
+    use Notifiable, HasRoles, HasMediaTrait, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -59,8 +60,26 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany( 'App\ClassroomUser' );
     }
 
-    public function sluggable()
+    public function getRoleAttribute()
     {
-        return [ 'username' => [ 'source' => [ 'name' ] , 'separator' => '.' ] ];
+        return $this->roles->pluck('name');
+    }
+
+    public function generateAvatar()
+    {
+        $avatarPath = Storage::disk('public')->path('').'/'.'avatar-'.$this->id.'.png';
+        \Avatar::create($this->name)->save($avatarPath,100);
+        $this->addMedia($avatarPath )->toMediaCollection( 'avatar','public' );
+    }
+
+        /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPassword($token));
     }
 }

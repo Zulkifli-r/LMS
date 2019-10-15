@@ -1,7 +1,7 @@
 <?php
 
 if (!function_exists('apiResponse')) {
-    function apiResponse($code, $data, $message = null){
+    function apiResponse($code, $data = null, $message = null){
         $res_data = separatePagingAndData($data);
         $res_diag = httpResponse($code, $message);
         return response(array_merge($res_data, $res_diag), 200);
@@ -13,6 +13,9 @@ if (!function_exists('httpResponse')) {
         switch ($code) {
             case 200:
                 $status = 'OK';
+                break;
+            case 400:
+                $status = 'BAD REQUEST';
                 break;
             case 401:
                 $status = 'UNAUTORIZED';
