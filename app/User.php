@@ -45,9 +45,14 @@ class User extends Authenticatable implements HasMedia
 
     protected $guard_name = 'api';
 
+    public function classroom()
+    {
+        return $this->hasOne('App\Classroom','created_by');
+    }
+
     public function classrooms()
     {
-        return $this->belongsToMany('App\Classroom');
+        return $this->belongsToMany('App\Classroom', 'classroom_user');
     }
 
     public function category()
@@ -82,4 +87,5 @@ class User extends Authenticatable implements HasMedia
     {
         $this->notify(new ResetPassword($token));
     }
+
 }
