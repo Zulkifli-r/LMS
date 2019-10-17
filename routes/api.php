@@ -29,4 +29,14 @@ Route::group( ['namespace' => 'Api'], function(){
         Route::post('forgot-password', 'ForgotPasswordController@sendResetLinkEmail');
         Route::get('reset-password', 'ResetPasswordController@reset');
     });
+
+    Route::group( ['middleware' => 'auth:api'], function(){
+
+        Route::group(['prefix' => 'classroom'], function(){
+            Route::post('new', 'ClassroomController@create');
+            Route::get('list', 'ClassroomController@list');
+            Route::get('my-classroom', 'ClassroomController@myClassroom');
+        });
+
+    });
 });

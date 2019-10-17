@@ -12,19 +12,23 @@ class Classroom extends Model implements HasMedia
 {
     use HasMediaTrait, Sluggable, SoftDeletes;
 
-    // public function sluggable()
-    // {
-    //     # code...
-    // }
+    protected $hidden = ['id'];
 
-    public function categories()
+    protected $fillable = ['name','created_by'];
+
+    public function sluggable()
     {
-        return $this->morphToMany( 'App\Category', 'categorizable' )->withTimestamps();
+        return ['slug' => ['source' => 'name']];
     }
 
-    public function tag()
+    public function user()
     {
-        return $this->morphToMany('App\Tag', 'tagable')->withTimestamps();
+        return $this->belongsTo('App\User','created_by');
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany('App\User', 'classroom_user');
     }
 
     public function classroomUsers()
