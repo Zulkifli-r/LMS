@@ -38,5 +38,10 @@ Route::group( ['namespace' => 'Api'], function(){
             Route::get('my-classroom', 'ClassroomController@myClassroom');
         });
 
+        Route::group(['prefix' => 'account'], function(){
+            Route::post('update-info', 'AccountController@updateInfo');
+            Route::post('change-avatar', 'AccountController@changeAvatar');
+        });
+
     });
 });
