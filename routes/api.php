@@ -36,6 +36,13 @@ Route::group( ['namespace' => 'Api'], function(){
             Route::post('new', 'ClassroomController@create');
             Route::get('list', 'ClassroomController@list');
             Route::get('my-classroom', 'ClassroomController@myClassroom');
+
+                Route::group(['prefix' => 'invitation'], function(){
+                    Route::get('generate-public-invitation', 'InvitationController@generatePublicInvitation');
+                    Route::post('send-private-invitation', 'InvitationController@sendPrivateInvitation');
+                    Route::get('join', 'InvitationController@joinClassroom');
+                });
+
         });
 
         Route::group(['prefix' => 'account'], function(){
