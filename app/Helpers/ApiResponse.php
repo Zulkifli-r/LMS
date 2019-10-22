@@ -20,6 +20,9 @@ if (!function_exists('httpResponse')) {
             case 401:
                 $status = 'UNAUTORIZED';
                 break;
+            case 403:
+                $status = 'FORBIDDEN';
+                break;
             case 404:
                 $status = 'NOT FOUND';
                 break;
