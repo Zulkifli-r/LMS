@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Classroom;
+use App\Exceptions\NotFoundException;
 use App\Exceptions\ValidationException;
 use App\Http\Resources\Classroom as ClassroomResource;
 use App\Repositories\Interfaces\ClassroomInterface;
@@ -62,14 +63,25 @@ class ClassroomRepository implements ClassroomInterface
 
     }
 
+    // validate incoming request
     private function validator(array $data){
         return Validator::make($data, [
             'name' => 'string|required|max:255',
         ]);
     }
 
+    // get classroom by logged in user
     public function myClassroom(User $user)
     {
         return ClassroomResource::collection($user->classrooms);
+    }
+
+    public static function getClassroomBySlug(string $slug){
+        $classroom = app()->make('App\Classroom');
+
+        if ( $classroom = $classroom->where('slug' , $slug)->first() )
+            return $classroom->where('slug' , $slug)->first();
+
+        throw new NotFoundException('classroom');
     }
 }
