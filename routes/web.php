@@ -20,7 +20,7 @@ Route::group(['domain' => env('FE_VERIFY_ROUTE','localhost:3000/')], function()
     Route::get('/verify', function()
     { return null; })->name('fe-verify-route');
 
-    Route::get('/invitation', function()
+    Route::get('/invitation/join', function()
     { return null; })->name('fe-invitation-route');
 
 });

@@ -21,7 +21,7 @@ class InvitationController extends Controller
 
     public function sendPrivateInvitation(Request $request)
     {
-        return $this->repository->sendPrivateInvitation($request->all());
+        return apiResponse(200,$this->repository->sendPrivateInvitation($request->all()), 'We\'ve send invitation link to the following email account');
     }
 
     public function joinClassroom(Request $request)
