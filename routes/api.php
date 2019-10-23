@@ -28,9 +28,19 @@ Route::group( ['namespace' => 'Api'], function(){
         Route::get('verify-email','VerificationController@verify');
         Route::post('forgot-password', 'ForgotPasswordController@sendResetLinkEmail');
         Route::get('reset-password', 'ResetPasswordController@reset');
+
     });
 
     Route::group( ['middleware' => 'auth:api'], function(){
+
+        Route::get('logout', function(){
+            $userTokens = auth('api')->user()->tokens;
+            foreach ($userTokens as $key => $token) {
+                $token->revoke();
+            }
+
+            return apiResponse(200, null);
+        });
 
         Route::group(['prefix' => 'classroom'], function(){
             Route::post('new', 'ClassroomController@create');
