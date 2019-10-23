@@ -21,4 +21,9 @@ class Invitation extends Model
     {
         return (new self)->where('token', $token)->first() ;
     }
+
+    public function classroom()
+    {
+        return $this->belongsTo('App\Classroom');
+    }
 }
