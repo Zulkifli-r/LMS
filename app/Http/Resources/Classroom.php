@@ -15,8 +15,11 @@ class Classroom extends JsonResource
     public function toArray($request)
     {
         return [
-            'slug' => $this->slug,
+            'title' => $this->title,
             'name' => $this->name,
+            'slug' => $this->slug,
+            'tags' => Tag::collection($this->tags),
+            'classroom_type' => $this->class_type,
             'classroom_owner' => auth()->user()->id == $this->user->id
                                         ? 'you'
                                         : $this->user->name,

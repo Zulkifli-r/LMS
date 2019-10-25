@@ -7,14 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\Tags\HasTags;
 
 class Classroom extends Model implements HasMedia
 {
-    use HasMediaTrait, Sluggable, SoftDeletes;
+    use HasMediaTrait, Sluggable, SoftDeletes, HasTags;
 
     protected $hidden = ['id'];
 
-    protected $fillable = ['name','created_by'];
+    protected $fillable = ['name','title','description','class_type','created_by'];
 
     public function sluggable()
     {
