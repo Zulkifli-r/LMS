@@ -60,5 +60,10 @@ Route::group( ['namespace' => 'Api'], function(){
             Route::post('change-avatar', 'AccountController@changeAvatar');
         });
 
+        Route::group(['prefix' => 'discover'], function(){
+            Route::get('by-classname', 'DiscoverController@byClassName');
+            Route::get('by-tags', 'DiscoverController@byTags');
+        });
+
     });
 });

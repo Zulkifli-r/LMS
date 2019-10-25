@@ -50,4 +50,14 @@ class Classroom extends Model implements HasMedia
     {
         return $this->hasMany( 'App\ClassroomUser' )->role( 'student' );
     }
+
+    public function scopePublic($query)
+    {
+        return $query->where('class_type', 'public');
+    }
+
+    public function scopePrivate($query)
+    {
+        return $query->where('class_type', 'private');
+    }
 }
