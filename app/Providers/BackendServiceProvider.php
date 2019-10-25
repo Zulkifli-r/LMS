@@ -15,11 +15,11 @@ class BackendServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(AccountRepository::class, function ($app) {
+        $this->app->bind(AccountRepository::class, function ($app) {
             return new AccountRepository(auth('api')->user());
         });
 
-        $this->app->singleton(ClassroomInvitationRepository::class, function ($app) {
+        $this->app->bind(ClassroomInvitationRepository::class, function ($app) {
             return new ClassroomInvitationRepository(auth('api')->user());
         });
     }

@@ -14,8 +14,6 @@ class ClassroomCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return null;
-        // return apiResponse(200, $this->collection);
         return [
             'data' => $this->collection,
         ];
