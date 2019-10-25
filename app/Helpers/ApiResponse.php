@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Pagination\LengthAwarePaginator;
+
 if (!function_exists('apiResponse')) {
     function apiResponse($code, $data = null, $message = null){
         $res_data = separatePagingAndData($data);
@@ -52,17 +54,18 @@ if (!function_exists('httpResponse')) {
 
 if (!function_exists('separatePagingAndData')) {
     function separatePagingAndData($data){
-        if ($data instanceof LengthAwarePaginator) {
-            if ($data->lastPage() > 1) {
-                $res = $data->toArray();
-                $data = $res['response'];
-                unset($res['response']);
-                return ['pagination' => $res, 'response' => $data];
+        if ($data->resource instanceof LengthAwarePaginator) {
+            if ($data->resource->lastPage() > 1) {
+                $res['meta']['count'] = $data->resource->perPage();
+                $res['meta']['total'] = $data->resource->total();
+                $res['response'] = $data;
+                $res['links']['first'] = $data->resource->url(1);
+                $res['links']['last'] = $data->resource->url($data->resource->lastPage());
+                $res['links']['next'] = $data->resource->nextPageUrl();
+                $res['links']['prev'] = $data->resource->previousPageUrl();
+                return $res;
             }
             else{
-                $res = $data->toArray();
-                $data = $res['response'];
-                unset($res['pagination']);
                 return ['response' => $data];
             }
         }else{
