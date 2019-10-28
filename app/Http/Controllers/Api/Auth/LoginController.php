@@ -56,7 +56,30 @@ class LoginController extends Controller
         // user surpasses their maximum number of attempts they will get locked out.
         $this->incrementLoginAttempts($request);
 
-        return apiResponse(404,null,'user not found');
+        return $this->sendFailedLoginResponse($request);
+
+        // return apiResponse(400,null,'Incorrect credentials provided');
+    }
+
+    /**
+     * Get the failed login response instance.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        $user = \App\User::where('email',$request->email)->first();
+        if ($user) {
+            if ($user->password != \Hash::make($request->password)) {
+                return apiResponse(400,null,'Password missmatch');
+            }
+        }
+        else{
+            return apiResponse(404,null,'User not found');
+        }
     }
 
     protected function validateLogin(array $data)
