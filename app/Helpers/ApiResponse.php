@@ -54,7 +54,7 @@ if (!function_exists('httpResponse')) {
 
 if (!function_exists('separatePagingAndData')) {
     function separatePagingAndData($data){
-        if ($data->resource instanceof LengthAwarePaginator) {
+        if (isset($data->resource) && $data->resource instanceof LengthAwarePaginator) {
             if ($data->resource->lastPage() > 1) {
                 $res['meta']['count'] = $data->resource->perPage();
                 $res['meta']['total'] = $data->resource->total();
