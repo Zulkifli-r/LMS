@@ -13,7 +13,7 @@ class CreateTeacheableUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('teacheable_user', function (Blueprint $table) {
+        Schema::create('teachable_user', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('teachable_id')->unsigned();
             $table->bigInteger('classroom_user_id')->unsigned();
