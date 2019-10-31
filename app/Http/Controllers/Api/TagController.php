@@ -21,6 +21,6 @@ class TagController extends Controller
 
     public function autocomplete(Request $request)
     {
-        return apiResponse(200, $this->repository->atocomplete($request->q));
+        return apiResponse(200, $this->repository->atocomplete($request));
     }
 }
