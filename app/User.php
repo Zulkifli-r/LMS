@@ -88,4 +88,9 @@ class User extends Authenticatable implements HasMedia
         $this->notify(new ResetPassword($token));
     }
 
+    public static function getLoggedInUser()
+    {
+        return auth('api')->user();
+    }
+
 }

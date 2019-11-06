@@ -5,6 +5,7 @@ namespace App;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\Tags\HasTags;
@@ -37,18 +38,30 @@ class Classroom extends Model implements HasMedia
         return $this->hasMany( 'App\ClassroomUser' );
     }
 
+
     public function createdBy() {
         return $this->belongsTo( 'App\User', 'created_by' );
     }
 
-    public function selfClassroomUser()
+    public function classroomUser()
     {
-        return $this->hasOne( 'App\ClassroomUser' )->where( 'user_id', auth()->user()->id );
+        return $this->hasOne( 'App\ClassroomUser' )->where( 'user_id', Auth::user()->id )->first();
     }
 
     public function students()
     {
-        return $this->hasMany( 'App\ClassroomUser' )->role( 'student' );
+        // return $this->hasMany( 'App\ClassroomUser' )->role( 'student' );
+        return $this->classroomUsers()->role('student');
+    }
+
+    public function teachers()
+    {
+        return $this->classroomUsers()->role('teacher');
+    }
+
+    public function teachables()
+    {
+        return $this->hasMany('App\Teachable');
     }
 
     public function scopePublic($query)
@@ -59,5 +72,23 @@ class Classroom extends Model implements HasMedia
     public function scopePrivate($query)
     {
         return $query->where('class_type', 'private');
+    }
+
+    // public function scopeStudents()
+    // {
+    //     return $this->classroomUsers()->role('student');
+    // }
+
+    // public function scopeTeachers()
+    // {
+    //     return $this->classroomUsers()->role('teacher');
+    // }
+
+    public function isOwner() {
+        return $this->user->id == auth('api')->user()->id;
+    }
+
+    public static function getBySlug($slug){
+        return (new self)->where('slug', $slug)->first();
     }
 }

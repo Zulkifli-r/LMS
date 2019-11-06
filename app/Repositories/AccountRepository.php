@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\ValidationException;
 use App\Repositories\Interfaces\AccountInterface;
 use App\User;
 use Illuminate\Support\Facades\Validator;

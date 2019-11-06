@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\ClassroomRepository;
-use App\User;
 use Illuminate\Http\Request;
 
 class ClassroomController extends Controller
@@ -26,5 +25,10 @@ class ClassroomController extends Controller
     public function myClassroom()
     {
         return apiResponse(200,$this->repository->myClassroom(auth()->user())) ;
+    }
+
+    public function details($slug)
+    {
+        return apiResponse(200,$this->repository->details($slug));
     }
 }
