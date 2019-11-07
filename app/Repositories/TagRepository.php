@@ -18,8 +18,13 @@ class TagRepository
         return TagResource::collection($this->tag->all());
     }
 
-    public function atocomplete($query)
+    public function atocomplete($request)
     {
-        return TagResource::collection($this->tag->containing($query)->get());
+        $tag = $this->tag->containing($request->q);
+        if ($request->has('limit')) {
+            $tag->limit($request->limit);
+        }
+
+        return TagResource::collection($tag->get());
     }
 }
