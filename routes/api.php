@@ -58,6 +58,8 @@ Route::group( ['namespace' => 'Api'], function(){
         Route::group(['prefix' => 'account'], function(){
             Route::post('update-info', 'AccountController@updateInfo');
             Route::post('change-avatar', 'AccountController@changeAvatar');
+            Route::get('profile', 'AccountController@profile');
+            Route::post('change-password', 'AccountController@changePassword');
         });
 
         Route::group(['prefix' => 'discover'], function(){
