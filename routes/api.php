@@ -36,6 +36,10 @@ Route::group( ['namespace' => 'Api'], function(){
                 Route::post('/{teachableId}/upload-submission', 'AssignmentController@uploadSubmission');
                 Route::get('/{teachableId}/list-submission/', 'AssignmentController@listSubmission');
             });
+
+            Route::group(['prefix' => '{slug}/resource'], function(){
+                Route::post('create-resource', 'ResourcesController@create');
+            });
         });
 
         Route::group(['prefix' => 'account'], function(){
