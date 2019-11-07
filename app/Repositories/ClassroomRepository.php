@@ -17,7 +17,7 @@ class ClassroomRepository implements ClassroomInterface
 
     protected $classroom;
 
-    public function __construct( Classroom $classroom) {
+    public function __construct(Classroom $classroom) {
         $this->classroom = $classroom;
     }
 
@@ -47,7 +47,9 @@ class ClassroomRepository implements ClassroomInterface
             $this->classroom->fill($validData->validated());
             $classroom = $user->classroom()->save($this->classroom);
             //attach tag to classroom
-            $classroom->attachTags($data['tags']);
+            if ( isset($data['tags']) ) {
+                $classroom->attachTags($data['tags']);
+            }
             // create classroomuser
             $user->classrooms()->save($this->classroom);
             // assign classroomuser role as a teacher
@@ -78,7 +80,7 @@ class ClassroomRepository implements ClassroomInterface
     // get classroom by logged in user
     public function myClassroom(User $user)
     {
-        return ClassroomResource::collection($user->classrooms);
+        return ClassroomResource::collection($user->classrooms->sortByDesc('created_at'));
     }
 
     public static function getClassroomBySlug(string $slug){
@@ -88,5 +90,11 @@ class ClassroomRepository implements ClassroomInterface
             return $classroom->where('slug' , $slug)->first();
 
         throw new NotFoundException('classroom');
+    }
+
+    public function details($slug)
+    {
+        $classroom = self::getClassroomBySlug($slug);
+        return new ClassroomResource($classroom, ['students', 'teachers']) ;
     }
 }

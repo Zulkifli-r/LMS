@@ -147,10 +147,11 @@ class ClassroomInvitationRepository {
 
     private function validatePrivateInvitationData(array $data){
         return Validator::make($data, [
+                'email' => 'required',
                 'email.*' => 'email',
                 'classroom' => 'required',
                 'invited_as' => 'required|in:student,teacher'
-            ], ['email.*' => ':input is not a valid email address'] );
+            ], ['email.required' => 'email is required','email.*' => ':input is not a valid email address'] );
     }
 
     private function validatePublicInvitationData(array $data){

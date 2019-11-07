@@ -2,21 +2,6 @@
 
 use Illuminate\Http\Request;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-// Route::domain('localhost:3000/verify', function(){ return null; } )->name('email.verification.verify');
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::group( ['namespace' => 'Api'], function(){
 
     // Auth controller
@@ -31,32 +16,30 @@ Route::group( ['namespace' => 'Api'], function(){
 
     });
 
-    Route::group( ['middleware' => 'auth:api'], function(){
-
-        Route::get('logout', function(){
-            $userTokens = auth('api')->user()->tokens;
-            foreach ($userTokens as $key => $token) {
-                $token->revoke();
-            }
-
-            return apiResponse(200, null);
-        });
+    Route::group(['middleware' => 'auth:api'], function(){
 
         Route::group(['prefix' => 'classroom'], function(){
             Route::post('new', 'ClassroomController@create');
             Route::get('list', 'ClassroomController@list');
             Route::get('my-classroom', 'ClassroomController@myClassroom');
+            Route::get('classroom-details/{slug}', 'ClassroomController@details');
 
-                Route::group(['prefix' => 'invitation'], function(){
-                    Route::get('generate-public-invitation', 'InvitationController@generatePublicInvitation');
-                    Route::post('send-private-invitation', 'InvitationController@sendPrivateInvitation');
-                    Route::get('join', 'InvitationController@joinClassroom');
-                });
+            Route::group(['prefix' => 'invitation'], function(){
+                Route::get('generate-public-invitation', 'InvitationController@generatePublicInvitation');
+                Route::post('send-private-invitation', 'InvitationController@sendPrivateInvitation');
+                Route::get('join', 'InvitationController@joinClassroom');
+            });
 
-                Route::group(['prefix' => 'assignment'], function(){
-                    Route::post('create-assignment', 'AssignmentController@create');
-                });
+            Route::group(['prefix' => '{slug}/assignment'], function(){
+                Route::post('create-assignment', 'AssignmentController@create');
+                Route::get('/view-assignment/{teachableId}', 'AssignmentController@viewAssignment');
+                Route::post('/{teachableId}/upload-submission', 'AssignmentController@uploadSubmission');
+                Route::get('/{teachableId}/list-submission/', 'AssignmentController@listSubmission');
+            });
 
+            Route::group(['prefix' => '{slug}/resource'], function(){
+                Route::post('create-resource', 'ResourcesController@create');
+            });
         });
 
         Route::group(['prefix' => 'account'], function(){
@@ -74,6 +57,14 @@ Route::group( ['namespace' => 'Api'], function(){
         Route::group(['prefix' => 'tag'], function(){
             Route::get('get-all-tags', 'TagController@getAllTags');
             Route::get('autocomplete', 'TagController@autocomplete');
+        });
+
+        Route::get('logout', function(){
+            $userTokens = auth('api')->user()->tokens;
+            foreach ($userTokens as $token) {
+                $token->revoke();
+            }
+            return apiResponse(200, null);
         });
 
     });

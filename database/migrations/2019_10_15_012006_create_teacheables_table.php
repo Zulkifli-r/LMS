@@ -13,17 +13,17 @@ class CreateTeacheablesTable extends Migration
      */
     public function up()
     {
-        Schema::create('teacheables', function (Blueprint $table) {
+        Schema::create('teachables', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('classroom_id')->unsigned();
-            $table->string('teacheable_type');
-            $table->bigInteger('teacheable_id')->unsigned();
+            $table->string('teachable_type');
+            $table->bigInteger('teachable_id')->unsigned();
             $table->bigInteger('created_by')->unsigned();
             $table->dateTime('available_at')->nullable();
             $table->dateTime('expires_at')->nullable();
-            $table->double('pass_threshold');
-            $table->double('final_grade_weight');
-            $table->integer('max_attempts_acount');
+            $table->double('pass_threshold')->default(0);
+            $table->double('final_grade_weight')->default(0);
+            $table->integer('max_attempts_acount')->default(0);
 
             $table->timestamps();
             $table->softDeletes();
