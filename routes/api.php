@@ -53,6 +53,10 @@ Route::group( ['namespace' => 'Api'], function(){
                     Route::get('join', 'InvitationController@joinClassroom');
                 });
 
+                Route::group(['prefix' => 'assignment'], function(){
+                    Route::post('create-assignment', 'AssignmentController@create');
+                });
+
         });
 
         Route::group(['prefix' => 'account'], function(){
@@ -65,6 +69,11 @@ Route::group( ['namespace' => 'Api'], function(){
         Route::group(['prefix' => 'discover'], function(){
             Route::get('by-classname', 'DiscoverController@byClassName');
             Route::get('by-tags', 'DiscoverController@byTags');
+        });
+
+        Route::group(['prefix' => 'tag'], function(){
+            Route::get('get-all-tags', 'TagController@getAllTags');
+            Route::get('autocomplete', 'TagController@autocomplete');
         });
 
     });
