@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Http\Resources\Account;
 use App\Repositories\Interfaces\AccountInterface;
 use App\User;
 use Illuminate\Support\Facades\Validator;
@@ -32,6 +33,11 @@ class AccountRepository implements AccountInterface
         $this->user->save();
 
         return $this->user;
+    }
+
+    public function profileDetails()
+    {
+        return new Account($this->user);
     }
 
     private function validateAccountInfo(array $data){
