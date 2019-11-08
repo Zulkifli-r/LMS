@@ -55,7 +55,7 @@ class ResetPassword extends Notification implements ShouldQueue
                     ->subject(Lang::get('Reset Password Notification'))
                     ->line(Lang::get('You are receiving this email because we received a password reset request for your account.'))
                     ->line('Follow this link to reset your password.')
-                    ->action('Notification Action', env('FE_RESET_PASSWORD_ROUTE','http://localhost:3000/reset-password').'?token='.$this->token.'&email='.$notifiable->getEmailForPasswordReset())
+                    ->action('Notification Action', env('FE_RESET_PASSWORD_ROUTE','http://localhost:3000/reset/set-password').'?token='.$this->token.'&email='.$notifiable->getEmailForPasswordReset())
                     ->line(Lang::get('If you did not request a password reset, no further action is required.'));
     }
 }
