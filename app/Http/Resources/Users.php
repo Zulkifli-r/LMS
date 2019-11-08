@@ -16,7 +16,8 @@ class Users extends JsonResource
     {
         return [
             'name' => $this->name,
-            'email' => $this->email
+            'email' => $this->email,
+            'avatar' => new Media($this->getMedia('avatar')->first())
         ];
     }
 }

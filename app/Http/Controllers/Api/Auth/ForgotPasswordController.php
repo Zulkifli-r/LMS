@@ -40,6 +40,6 @@ class ForgotPasswordController extends Controller
 
         return $response == Password::RESET_LINK_SENT
                     ? apiResponse(200, null, 'Reset password email has been sent')
-                    : apiResponse(500);
+                    : apiResponse(404,null,'Email not registered');
     }
 }

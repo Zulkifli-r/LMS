@@ -29,4 +29,14 @@ class AccountController extends Controller
 
         return apiResponse(500,null);
     }
+
+    public function profile()
+    {
+        return apiResponse(200, $this->repository->profileDetails());
+    }
+
+    public function changePassword(Request $request)
+    {
+        return apiResponse(200, $this->repository->changePassword($request), 'Your password has been changed');
+    }
 }
