@@ -50,7 +50,8 @@ class AccountRepository implements AccountInterface
         }
 
         if (!Hash::check($data->old_password, $this->user->password)) {
-            throw new ValidationException('Old password did not match');
+
+            throw new ValidationException(['old_password' => ['Old password did not match']]);
         }
 
         $this->user->password = Hash::make($data->new_password);
