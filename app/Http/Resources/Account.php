@@ -16,9 +16,7 @@ class Account extends JsonResource
     {
         $res = [];
         $data = $this->classrooms->map(function($value){
-            // dd($value->classroomUsers);
             $value->classroom_user = $value->classroomUsers;
-            // dd($value->classroom_user);
             return $value;
         });
 
@@ -26,7 +24,6 @@ class Account extends JsonResource
 
         $res['user'] = new Users($this);
         $res['class_count'] = $data->count();
-        // $res['classmates_count'] = $data->where('created_by','!=',$this->id)->sum('students');
         $res['created_class']['count'] = $created_classroom->count();
         $res['created_class']['details'] = ClassroomCollection::make($created_classroom->take(5))
                                             ->includes(

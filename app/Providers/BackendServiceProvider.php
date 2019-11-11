@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Exceptions\UnauthorizeException;
 use App\Repositories\AccountRepository;
 use App\Repositories\ClassroomInvitationRepository;
 use Illuminate\Support\ServiceProvider;
@@ -16,7 +17,11 @@ class BackendServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(AccountRepository::class, function ($app) {
-            return new AccountRepository(auth('api')->user());
+            $user = auth('api')->user();
+            if ($user == null) {
+                throw new UnauthorizeException();
+            }
+            return new AccountRepository($user);
         });
 
         $this->app->bind(ClassroomInvitationRepository::class, function ($app) {

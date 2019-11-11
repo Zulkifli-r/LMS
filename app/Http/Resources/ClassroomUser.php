@@ -14,9 +14,6 @@ class ClassroomUser extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'name' => $this->user->name,
-            'email' => $this->user->email
-        ];
+        return new Users($this->user);
     }
 }

@@ -37,6 +37,10 @@ Route::group( ['namespace' => 'Api'], function(){
                 Route::get('/{teachableId}/list-submission/', 'AssignmentController@listSubmission');
             });
 
+            Route::group(['prefix' => '{slug}/quiz'], function(){
+                Route::post('create-quiz', 'QuizController@create');
+            });
+
             Route::group(['prefix' => '{slug}/resource'], function(){
                 Route::post('create-resource', 'ResourcesController@create');
             });
@@ -47,6 +51,12 @@ Route::group( ['namespace' => 'Api'], function(){
             Route::post('change-avatar', 'AccountController@changeAvatar');
             Route::get('profile', 'AccountController@profile');
             Route::post('change-password', 'AccountController@changePassword');
+        });
+
+        Route::group(['prefix' => 'classes'], function(){
+            Route::get('index', 'ClassesController@index');
+            Route::get('detail-created', 'ClassesController@detailCreated');
+            Route::get('detail-joined', 'ClassesController@detailJoined');
         });
 
         Route::group(['prefix' => 'discover'], function(){
