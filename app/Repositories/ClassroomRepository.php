@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Classroom;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\ValidationException;
+use App\Http\Resources\Classes;
 use App\Http\Resources\Classroom as ClassroomResource;
 use App\Repositories\Interfaces\ClassroomInterface;
 use App\Repositories\Traits\RequestParameter;
@@ -38,7 +39,7 @@ class ClassroomRepository implements ClassroomInterface
         \DB::transaction(function() use($data, $user) {
 
             // create classroom
-            $validData = $this->validator($data);
+            $validData = $this->validator($data->all());
 
             if ($validData->fails()) {
                 throw new ValidationException($validData->errors());
@@ -46,6 +47,11 @@ class ClassroomRepository implements ClassroomInterface
 
             $this->classroom->fill($validData->validated());
             $classroom = $user->classroom()->save($this->classroom);
+
+            // upload classroom image
+            if ($data->has('image')) {
+                $classroom->addMedia($data->image)->toMediaCollection('image');
+            }
             //attach tag to classroom
             if ( isset($data['tags']) ) {
                 $classroom->attachTags($data['tags']);
@@ -80,7 +86,8 @@ class ClassroomRepository implements ClassroomInterface
     // get classroom by logged in user
     public function myClassroom(User $user)
     {
-        return ClassroomResource::collection($user->classrooms->sortByDesc('created_at'));
+        return new Classes(auth('api')->user());
+        // ClassroomResource::collection($user->classrooms->sortByDesc('created_at'));
     }
 
     public static function getClassroomBySlug(string $slug){
@@ -95,6 +102,6 @@ class ClassroomRepository implements ClassroomInterface
     public function details($slug)
     {
         $classroom = self::getClassroomBySlug($slug);
-        return new ClassroomResource($classroom, ['students', 'teachers']) ;
+        return new ClassroomResource($classroom, ['students' => true, 'teachers' => true]) ;
     }
 }

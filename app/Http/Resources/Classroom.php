@@ -2,19 +2,17 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class Classroom extends JsonResource
 {
-    protected $includes = [];
+    public $includes = [];
 
     public function __construct($collect, $includes = []) {
         $this->includes = collect($includes);
         parent::__construct($collect);
     }
-
-
-
 
     /**
      * Transform the resource into an array.
@@ -28,6 +26,7 @@ class Classroom extends JsonResource
             'title' => $this->title,
             'name' => $this->name,
             'description' => $this->description,
+            'image' => new Media($this->getMedia('image')->first()),
             'slug' => $this->slug,
             'tags' => Tag::collection($this->tags),
             'classroom_type' => $this->class_type,
@@ -35,16 +34,29 @@ class Classroom extends JsonResource
             'created_at' => $this->created_at
         ];
 
-        if ($this->includes->contains('teachers')) {
+        if ($this->includes->has('teachers')) {
            $res['teachers'] = ClassroomUser::collection($this->teachers);
         }
 
-        if ($this->includes->contains('students')) {
+        if ($this->includes->has('students')) {
             $res['students'] = ClassroomUser::collection($this->students);
         }
 
+        if ($this->includes->has('students_count')) {
+            $res['students_count'] = $this->students->count();
+        }
+
+        if ($this->includes->has('created_class')) {
+
+        }
+
         return $res;
-
-
     }
+
+    public function includes($includes = [])
+    {
+        $this->includes = collect($includes);
+        return $this;
+    }
+
 }

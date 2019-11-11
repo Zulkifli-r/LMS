@@ -16,7 +16,7 @@ class ClassroomController extends Controller
 
     public function create(Request $request)
     {
-        $response = $this->repository->create($request->all(), auth()->user());
+        $response = $this->repository->create($request, auth()->user());
 
         return apiResponse(200,$response);
 
