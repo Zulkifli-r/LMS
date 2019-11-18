@@ -30,7 +30,7 @@ Route::group( ['namespace' => 'Api'], function(){
                 Route::get('join', 'InvitationController@joinClassroom');
             });
 
-            Route::group(['prefix' => '{slug}/assignment'], function(){
+            Route::group(['prefix' => '{slug}/assignment', 'middleware' => 'classroom-resource'], function(){
                 Route::post('create-assignment', 'AssignmentController@create');
                 Route::get('/view-assignment/{teachableId}', 'AssignmentController@viewAssignment');
                 Route::post('/{teachableId}/upload-submission', 'AssignmentController@uploadSubmission');
@@ -39,6 +39,16 @@ Route::group( ['namespace' => 'Api'], function(){
 
             Route::group(['prefix' => '{slug}/quiz'], function(){
                 Route::post('create-quiz', 'QuizController@create');
+                Route::get('list', 'QuizController@list');
+                Route::get('{quiz}/details', 'QuizController@details');
+                Route::post('{quiz}/update', 'QuizController@update');
+                Route::get('{quiz}/publish', 'QuizController@publish');
+                Route::get('{quiz}/unpublish', 'QuizController@unpublish');
+                // Question section
+                Route::post('{quiz}/create-question', 'QuizController@createQuestion');
+                Route::post('{quiz}/update/{question}', 'QuizController@updateQuestion');
+                Route::get('{quiz}/delete/{question}', 'QuizController@deleteQuestion');
+                Route::get('{quiz}/force-delete/{question}', 'QuizController@forceDeleteQuestion');
             });
 
             Route::group(['prefix' => '{slug}/resource'], function(){
