@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Exceptions\UnauthorizeException;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -45,7 +46,9 @@ class Classroom extends Model implements HasMedia
 
     public function classroomUser()
     {
-        return $this->hasOne( 'App\ClassroomUser' )->where( 'user_id', Auth::user()->id )->first();
+        $user = Auth::guard('api')->user();
+
+        return $this->hasOne( 'App\ClassroomUser' )->where( 'user_id', $user->id )->first();
     }
 
     public function students()
@@ -74,21 +77,23 @@ class Classroom extends Model implements HasMedia
         return $query->where('class_type', 'private');
     }
 
-    // public function scopeStudents()
-    // {
-    //     return $this->classroomUsers()->role('student');
-    // }
-
-    // public function scopeTeachers()
-    // {
-    //     return $this->classroomUsers()->role('teacher');
-    // }
-
     public function isOwner() {
         return $this->user->id == auth('api')->user()->id;
     }
 
     public static function getBySlug($slug){
         return (new self)->where('slug', $slug)->first();
+    }
+
+    public function quizzes()
+    {
+        return $this->hasManyThrough(
+            '\App\Quiz',
+            '\App\Teachable',
+            null,
+            'id',
+            null,
+            'teachable_id'
+        );
     }
 }
