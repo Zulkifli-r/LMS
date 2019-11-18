@@ -24,7 +24,7 @@ class Classes extends JsonResource
     public function toArray($request)
     {
         $res = [];
-        $data = $this->classrooms->map(function($value){
+        $data = $this->classrooms->sortByDesc('created_at')->map(function($value){
             $value->classroom_user = $value->classroomUsers;
             return $value;
         });

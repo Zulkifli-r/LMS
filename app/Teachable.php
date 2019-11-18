@@ -42,4 +42,23 @@ class Teachable extends Model implements HasMedia
     {
         return $this->belongsTo('App\User','created_by');
     }
+
+    public function save(array $options = [])
+    {
+        if (!$this->created_by) {
+            $this->created_by = auth('api')->user()->id;
+        }
+
+        parent::save($options);
+    }
+
+    public function setExpiresAtAttribute($value)
+    {
+        return  $this->attributes['expires_at'] = \Carbon\Carbon::createFromFormat('d/m/Y', $value);
+    }
+
+    public function quiz()
+    {
+        return $this->belongsTo('App\Quiz','teachable_id');
+    }
 }

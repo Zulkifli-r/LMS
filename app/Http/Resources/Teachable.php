@@ -27,6 +27,7 @@ class Teachable extends JsonResource
     public function toArray($request)
     {
         $res = [];
+        $res['id'] = $this->id;
         $res['teachable_type'] = $this->teachable_type;
 
         if (collect($this->includes)->has('assignment')) {

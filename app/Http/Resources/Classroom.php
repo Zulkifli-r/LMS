@@ -31,7 +31,8 @@ class Classroom extends JsonResource
             'tags' => Tag::collection($this->tags),
             'classroom_type' => $this->class_type,
             'classroom_owner' => new Users($this->user),
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
+            'created_at_for_human' => $this->created_at->diffForHumans()
         ];
 
         if ($this->includes->has('teachers')) {

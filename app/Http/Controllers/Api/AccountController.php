@@ -22,7 +22,6 @@ class AccountController extends Controller
 
     public function changeAvatar(Request $request)
     {
-
         if ($newAvatar = $this->repository->changeAvatar($request->file('avatar'))) {
             return apiResponse(200, $newAvatar, 'Your avatar has been updated');
         }

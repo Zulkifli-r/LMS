@@ -45,7 +45,7 @@ class ClassroomRepository implements ClassroomInterface
                 throw new ValidationException($validData->errors());
             }
 
-            $this->classroom->fill($validData->validated());
+            $this->classroom->fill($data->all());
             $classroom = $user->classroom()->save($this->classroom);
 
             // upload classroom image

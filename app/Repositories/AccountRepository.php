@@ -19,8 +19,9 @@ class AccountRepository implements AccountInterface
 
     public function changeAvatar($newAvatar)
     {
+        $this->user->clearMediaCollection('avatar');
         $this->user->addMedia($newAvatar)->toMediaCollection('avatar');
-        return count($this->user->getMedia('avatar')) ? asset($this->user->getMedia('avatar')->first()->getUrl()) : null;
+        return count($this->user->getMedia('avatar')) ? asset($this->user->getMedia('avatar')->sortByDesc('created_at')->first()->getFullUrl()) : null;
     }
 
     public function updateInfo(array $data)

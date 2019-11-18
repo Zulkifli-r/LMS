@@ -21,7 +21,7 @@ class Media extends JsonResource
             'mime_type' => $this->mime_type,
             'size' => $this->size,
             'collection' => $this->collection_name,
-            'download_url' => $this->getUrl(),
+            'download_url' => $this->getFullUrl(),
             // 'model_type' => $this->model_type,
             // 'createda_t' => $this->created_at->toIso8601String(),
             'created_at_for_humans' => $this->created_at->diffForHumans(),
