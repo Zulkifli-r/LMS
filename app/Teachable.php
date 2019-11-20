@@ -61,4 +61,9 @@ class Teachable extends Model implements HasMedia
     {
         return $this->belongsTo('App\Quiz','teachable_id');
     }
+
+    public function resource()
+    {
+        return $this->belongsTo('App\Resource', 'teachable_id');
+    }
 }

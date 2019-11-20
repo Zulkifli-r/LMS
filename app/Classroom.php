@@ -96,4 +96,9 @@ class Classroom extends Model implements HasMedia
             'teachable_id'
         );
     }
+
+    public function resources()
+    {
+        // return $this->
+    }
 }
