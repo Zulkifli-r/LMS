@@ -38,7 +38,7 @@ class Resource extends Model implements HasMedia
 
     public static function getById($resource)
     {
-        $resource = (new static)::where('id', $resource);
+        $resource = (new static)::where('id', $resource)->withTrashed();
 
         if (!$resource->first()) {
             throw new NotFoundException('Resource');

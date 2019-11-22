@@ -77,6 +77,34 @@ class ResourceRepository
         return new Resource($this->resource);
     }
 
+    public function delete($resource)
+    {
+        $this->resource = \App\Resource::getById($resource);
+
+        if ($this->resource->delete()) {
+            return true;
+        }
+    }
+
+    public function trashed($request)
+    {
+        $resource = $this->classroom->resources()->onlyTrashed()->paginate($request->perPage ?? $this->resource->getPerPage());
+
+        return new ResourceCollection($resource);
+    }
+
+    public function hardDelete($resource)
+    {
+        // force delete resource and clear media collection
+        $this->resource = \App\Resource::getById($resource);
+        $this->resource->teachable->teachableUsers()->delete();
+        $this->resource->teachable->forceDelete();
+        $this->resource->clearMediaCollection();
+        $this->resource->forceDelete();
+
+        return true;
+    }
+
     private function handleUploadJwVideo($request){
         // upload video to temporary location
         $this->resource->addMediaFromRequest('JwVideo')->toMediaCollection('tmpVideo');

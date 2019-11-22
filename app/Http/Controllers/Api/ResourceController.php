@@ -31,4 +31,20 @@ class ResourceController extends Controller
     {
         return apiResponse(200, $this->repository->details(Route::current()->resource));
     }
+
+    public function delete()
+    {
+        return apiResponse(200, $this->repository->delete(Route::current()->resource));
+    }
+
+    public function trashed(Request $request)
+    {
+        return apiResponse(200, $this->repository->trashed($request));
+    }
+
+    public function hardDelete()
+    {
+        return apiResponse(200, $this->repository->hardDelete(Route::current()->resource));
+    }
+
 }
