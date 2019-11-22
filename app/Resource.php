@@ -24,4 +24,9 @@ class Resource extends Model implements HasMedia
     {
         return $this->hasOne('\App\Teachable','teachable_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'created_by');
+    }
 }
