@@ -60,4 +60,9 @@ class QuizController extends Controller
     {
         return apiResponse(200, $this->repository->details($request, Route::current()->quiz));
     }
+
+    public function delete()
+    {
+        return apiResponse(200, $this->repository->delete(Route::current()->quiz));
+    }
 }

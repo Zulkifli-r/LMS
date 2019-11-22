@@ -102,9 +102,9 @@ class AssignmentRepository {
 
     private function validateAssignment(array $data){
         return Validator::make($data, [
-            'available_at'   => 'nullable|date',
+            'available_at'   => 'nullable|date_format:d/m/Y H:i:s',
             'max_attempts' => 'integer|min:0',
-            'expires_at'     => 'required|date',
+            'expires_at'     => 'required|date_format:d/m/Y H:i:s',
         ]);
     }
 }

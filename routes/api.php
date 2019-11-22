@@ -45,6 +45,7 @@ Route::group( ['namespace' => 'Api'], function(){
                     Route::post('{quiz}/update', 'QuizController@update');
                     Route::get('{quiz}/publish', 'QuizController@publish');
                     Route::get('{quiz}/unpublish', 'QuizController@unpublish');
+                    Route::get('{quiz}/delete', 'QuizController@delete');
                     // Question section
                     Route::post('{quiz}/create-question', 'QuizController@createQuestion');
                     Route::post('{quiz}/update/{question}', 'QuizController@updateQuestion');

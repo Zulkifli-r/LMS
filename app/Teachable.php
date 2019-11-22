@@ -54,7 +54,7 @@ class Teachable extends Model implements HasMedia
 
     public function setExpiresAtAttribute($value)
     {
-        return  $this->attributes['expires_at'] = \Carbon\Carbon::createFromFormat('d/m/Y', $value);
+        return  $this->attributes['expires_at'] = \Carbon\Carbon::createFromFormat('d/m/Y H:i:s', $value);
     }
 
     public function quiz()

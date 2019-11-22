@@ -151,4 +151,13 @@ class QuizRepository
 
         return $res->includes($includes);
     }
+
+    public function delete($quiz)
+    {
+        $this->quiz = \App\Quiz::getById($quiz);
+        if($this->quiz->teachable->teachableUsers()->delete() &&  $this->quiz->teachable->delete() && $this->quiz->delete() ){
+            return true;
+        }
+
+    }
 }
