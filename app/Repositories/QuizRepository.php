@@ -155,9 +155,28 @@ class QuizRepository
     public function delete($quiz)
     {
         $this->quiz = \App\Quiz::getById($quiz);
-        if($this->quiz->teachable->teachableUsers()->delete() &&  $this->quiz->teachable->delete() && $this->quiz->delete() ){
+
+        if ($this->quiz->delete()) {
             return true;
         }
+    }
 
+    public function trashed($request)
+    {
+        $quiz = $this->classroom->quizzes()->onlyTrashed()->paginate($request->perPage ?? $this->quiz->getPerPage());
+
+        return new QuizCollection($quiz);
+    }
+
+    public function hardDelete($quiz)
+    {
+        // force delete resource and clear media collection
+        $this->quiz = \App\Quiz::getById($quiz);
+        $this->quiz->teachable->teachableUsers()->delete();
+        $this->quiz->teachable->forceDelete();
+        $this->quiz->clearMediaCollection();
+        $this->quiz->forceDelete();
+
+        return true;
     }
 }

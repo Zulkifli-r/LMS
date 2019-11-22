@@ -36,7 +36,7 @@ class Quiz extends Model implements HasMedia
     }
 
     public static function getById($id){
-        $quiz = self::where('id', $id);
+        $quiz = self::where('id', $id)->withTrashed();
         if ($quiz = $quiz->first()) {
             return $quiz;
         }

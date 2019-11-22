@@ -42,11 +42,14 @@ Route::group( ['namespace' => 'Api'], function(){
                 Route::group(['prefix' => '{slug}/quiz'], function(){
                     Route::post('create-quiz', 'QuizController@create');
                     Route::get('list', 'QuizController@list');
+                    Route::get('trashed', 'QuizController@trashed');
+
                     Route::get('{quiz}/details', 'QuizController@details');
                     Route::post('{quiz}/update', 'QuizController@update');
                     Route::get('{quiz}/publish', 'QuizController@publish');
                     Route::get('{quiz}/unpublish', 'QuizController@unpublish');
                     Route::get('{quiz}/delete', 'QuizController@delete');
+                    Route::get('{resource}/hard-delete', 'QuizController@hardDelete');
                     // Question section
                     Route::post('{quiz}/create-question', 'QuizController@createQuestion');
                     Route::post('{quiz}/update/{question}', 'QuizController@updateQuestion');
@@ -57,8 +60,11 @@ Route::group( ['namespace' => 'Api'], function(){
                 Route::group(['prefix' => '{slug}/resource'], function(){
                     Route::post('create', 'ResourceController@create');
                     Route::get('list', 'ResourceController@list');
+                    Route::get('trashed', 'ResourceController@trashed');
 
                     Route::get('{resource}/details', 'ResourceController@details');
+                    Route::get('{resource}/delete', 'ResourceController@delete');
+                    Route::get('{resource}/hard-delete', 'ResourceController@hardDelete');
                 });
 
             });
