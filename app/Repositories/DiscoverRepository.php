@@ -36,7 +36,7 @@ class DiscoverRepository {
     {
         $classroom = $this->classroom->public();
 
-        $classroom = $classroom->withAnyTags($request->tags);
+        $classroom = $request->has('tags') && $request->tags[0] ?$classroom->withAnyTags($request->tags):$classroom;
 
         return ClassroomResource::collection($classroom->paginate());
     }
