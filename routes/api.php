@@ -56,6 +56,9 @@ Route::group( ['namespace' => 'Api'], function(){
 
                 Route::group(['prefix' => '{slug}/resource'], function(){
                     Route::post('create', 'ResourceController@create');
+                    Route::get('list', 'ResourceController@list');
+
+                    Route::get('{resource}/details', 'ResourceController@details');
                 });
 
             });

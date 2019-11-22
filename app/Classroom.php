@@ -111,6 +111,13 @@ class Classroom extends Model implements HasMedia
 
     public function resources()
     {
-        // return $this->
+        return $this->hasManyThrough(
+            '\App\Resource',
+            '\App\Teachable',
+            null,
+            'id',
+            null,
+            'teachable_id'
+        );
     }
 }

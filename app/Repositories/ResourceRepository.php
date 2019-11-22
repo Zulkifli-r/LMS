@@ -3,9 +3,13 @@
 namespace App\Repositories;
 
 use App\Classroom;
+use App\Exceptions\BadRequestException;
+use App\Exceptions\NotFoundException;
 use App\Exceptions\ValidationException;
 use App\Http\Resources\Resource;
+use App\Http\Resources\ResourceCollection;
 use Illuminate\Support\Facades\Validator;
+use Jwplayer\JwplatformAPI;
 
 class ResourceRepository
 {
@@ -59,7 +63,45 @@ class ResourceRepository
 
     }
 
-    private function handleUploadJwVideo($request){}
+    public function list($request)
+    {
+        $resources = $this->classroom->resources()->paginate($request->perPage??$this->resource->getPerPage());
+
+        return new ResourceCollection($resources);
+    }
+
+    public function details($resource)
+    {
+        $this->resource = \App\Resource::getById($resource);
+
+        return new Resource($this->resource);
+    }
+
+    private function handleUploadJwVideo($request){
+        // upload video to temporary location
+        $this->resource->addMediaFromRequest('JwVideo')->toMediaCollection('tmpVideo');
+        $target_file = $this->resource->getMedia('tmpVideo')->first()->getPath();
+
+        $jwplatform_api = new JwplatformAPI(env('JWPLAYER_KEY'),env('JWPLAYER_SECRET'));
+        $video['title'] = $this->resource->title;
+        $video['description'] = $this->resource->description;
+
+        $create_response = json_encode($jwplatform_api->call('/videos/create', $video));
+        $decoded = json_decode(trim($create_response), TRUE);
+        $upload_link = $decoded['link'];
+
+        $upload_response = $jwplatform_api->upload($upload_link, $target_file);
+
+        if ($upload_response['status'] != 'ok') {
+            throw new BadRequestException($upload_response['message']);
+        }
+
+        $this->resource->data = ['videoId' => $upload_response['media']['key'], 'playerId' => env('JWPLAYER_PLAYER_KEY')];
+        $this->resource->save();
+
+        $this->resource->clearMediaCollection('tmpVideo');
+
+    }
     private function handleUploadAudio($request){
         return $this->resource->addMediaFromRequest('Audio')->toMediaCollection('audio');
     }
@@ -67,11 +109,19 @@ class ResourceRepository
         return $this->resource->addMediaFromRequest('File')->toMediaCollection('file');
     }
     private function handleUploadYoutubeLink($request){
-        $videoId = preg_match("/(\?|&)v=([^&#]+)/",$request->YoutubeLink);
-        dd($videoId);
+        parse_str( parse_url( $request->YoutubeLink, PHP_URL_QUERY ), $url);
+        $url = collect($url);
+
+        if (!$url->has('v')) {
+            throw new NotFoundException('Youtube video');
+        }
+
+        $this->resource->data = ['videoId' => $url['v']];
+        $this->resource->save();
     }
     private function handleUploadLink($request){
-        // $this->resource->data =
+        $this->resource->data = ['link' => $request->link];
+        $this->resource->save();
     }
 
     private function validateResourceRequest($data){
@@ -83,8 +133,9 @@ class ResourceRepository
                 // 'resourceFile'          => 'required_if:resourceType, audio',
                 'Audio'                 => 'required_if:type,==,Audio|max:100000',
                 'File'                  => 'required_if:type,==,File|max:101200',
-                'YoutubeLink'           => 'required_if:type,==,YoutubeLink|regex:^(https?\:\/\/)?((www\.)?youtube\.com|youtu\.?be)\/.+$
-                ',
+                'YoutubeLink'           => 'required_if:type,==,YoutubeLink',
+                'Link'                  => 'required_if:type,==,Link',
+                'JwVideo'               => 'required_if:type,==,JwVideo'
             ]
         );
     }

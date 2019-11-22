@@ -21,4 +21,14 @@ class ResourceController extends Controller
     {
         return apiResponse(200,$this->repository->create($request));
     }
+
+    public function list(Request $request)
+    {
+        return apiResponse(200, $this->repository->list($request));
+    }
+
+    public function details()
+    {
+        return apiResponse(200, $this->repository->details(Route::current()->resource));
+    }
 }

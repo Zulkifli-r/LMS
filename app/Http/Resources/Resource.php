@@ -15,8 +15,11 @@ class Resource extends JsonResource
     public function toArray($request)
     {
         $res = [
+            'id' => $this->id,
+            'type' => $this->type,
             'title' => $this->title,
             'description' => $this->description,
+            'data' => $this->data,
             'created_by' => new Users($this->user),
             'media' => new Media($this->getMedia(strtolower($this->type))->first())
         ];
