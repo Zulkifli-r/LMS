@@ -6,6 +6,7 @@ use App\Classroom;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\ValidationException;
 use App\Http\Resources\Assignment as AssignmentResource;
+use App\Http\Resources\AssignmentCollection;
 use App\Http\Resources\Teachable as TeachableResource;
 use App\Teachable;
 use Illuminate\Support\Facades\Validator;
@@ -98,6 +99,11 @@ class AssignmentRepository {
     public function listSubmission()
     {
         return new TeachableResource($this->teachable,['assignments'=>true]);
+    }
+
+    public function list($request)
+    {
+         return new AssignmentCollection($this->classroom->assigments()->latest()->paginate($request->perPage ?? $this->assignment->getPerPage()));
     }
 
     private function validateAssignment(array $data){

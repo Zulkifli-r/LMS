@@ -32,6 +32,11 @@ class AssignmentController extends Controller
         return apiResponse(200, $this->repository->listSubmission());
     }
 
+    public function list(Request $request)
+    {
+        return apiResponse(200, $this->repository->list($request));
+    }
+
     public function uploadSubmission(Request $request)
     {
         return apiResponse(200, $this->repository->uploadSubmission($request), 'Your submission has been successfully uploaded');

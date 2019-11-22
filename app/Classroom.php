@@ -97,6 +97,18 @@ class Classroom extends Model implements HasMedia
         );
     }
 
+    public function assigments()
+    {
+        return $this->hasManyThrough(
+            '\App\Assignment',
+            '\App\Teachable',
+            null,
+            'id',
+            null,
+            'teachable_id'
+        );
+    }
+
     public function resources()
     {
         // return $this->

@@ -33,6 +33,7 @@ Route::group( ['namespace' => 'Api'], function(){
             Route::group(['middleware'=>'classroom-resource'], function(){
                 Route::group(['prefix' => '{slug}/assignment'], function(){
                     Route::post('create-assignment', 'AssignmentController@create');
+                    Route::get('list', 'AssignmentController@list');
                     Route::get('/view-assignment/{teachableId}', 'AssignmentController@viewAssignment');
                     Route::post('/{teachableId}/upload-submission', 'AssignmentController@uploadSubmission');
                     Route::get('/{teachableId}/list-submission/', 'AssignmentController@listSubmission');
