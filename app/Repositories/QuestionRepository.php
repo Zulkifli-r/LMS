@@ -55,8 +55,11 @@ class QuestionRepository
         \DB::transaction(function() use ($data){
             // fill the question
             $this->question->fill($data->only($this->question->getFillable()));
+
             // update the question
             $this->question->save();
+
+            $this->quiz->questions()->updateExistingPivot($this->question->id,['weight' => $data->weight]);
             // update/create choice item
             if ($data->has('choices')) {
                 $this->question->choiceItems()->delete();
