@@ -156,7 +156,7 @@ class ResourceRepository
         return Validator::make($data,[
                 'title'                 => 'required|string',
                 'description'           => 'required|string',
-                'type'                  => 'required|in:JwVideo,YoutubeLink,Audio,File,Url',
+                'type'                  => 'required|in:JwVideo,YoutubeLink,Audio,File,Link',
                 // 'resourceTypeSettings'  => 'required|json',
                 // 'resourceFile'          => 'required_if:resourceType, audio',
                 'Audio'                 => 'required_if:type,==,Audio|max:100000',
