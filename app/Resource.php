@@ -33,7 +33,13 @@ class Resource extends Model implements HasMedia
 
     public function getDataAttribute($value)
     {
-        return json_decode($value);
+        // dd($value);
+        return $value?json_decode($value):null;
+    }
+
+    public function setDataAttribute($value)
+    {
+        $this->attributes['data'] = json_encode($value);
     }
 
     public static function getById($resource)
