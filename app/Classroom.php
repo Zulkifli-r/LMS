@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Exceptions\NotFoundException;
 use App\Exceptions\UnauthorizeException;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
@@ -82,7 +83,12 @@ class Classroom extends Model implements HasMedia
     }
 
     public static function getBySlug($slug){
-        return (new self)->where('slug', $slug)->first();
+        $classroom = (new self)->where('slug', $slug);
+        if ($classroom->first()) {
+            return $classroom->first();
+        }
+
+        throw new NotFoundException('Class');
     }
 
     public function quizzes()
