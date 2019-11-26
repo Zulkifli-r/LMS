@@ -7,6 +7,8 @@ use App\Exceptions\NotFoundException;
 use App\Exceptions\ValidationException;
 use App\Http\Resources\Classes;
 use App\Http\Resources\Classroom as ClassroomResource;
+use App\Http\Resources\ClassroomCollection;
+use App\Http\Resources\UserCollection;
 use App\Repositories\Interfaces\ClassroomInterface;
 use App\Repositories\Traits\RequestParameter;
 use App\User;
@@ -68,9 +70,62 @@ class ClassroomRepository implements ClassroomInterface
         return new ClassroomResource($this->classroom);
     }
 
-    public function update()
+    public function update($request, $slug)
     {
+        $this->classroom = $this->classroom->getBySlug($slug);
 
+        $validData = $this->validator($request->all());
+        if ($validData->fails()) {
+            throw new ValidationException($validData->errors());
+        }
+
+        $this->classroom->fill($request->all());
+        $this->classroom->save();
+
+        // upload classroom image
+        if ($request->has('image')) {
+            $this->classroom->clearMediaCollection('image');
+            $this->classroom->addMedia($request->image)->toMediaCollection('image');
+        }
+
+        //attach tag to classroom
+        if ( isset($request['tags']) ) {
+            $this->classroom->attachTags($request['tags']);
+        }
+
+        return new ClassroomResource($this->classroom);
+    }
+
+    public function delete($slug)
+    {
+        $this->classroom = $this->classroom->getBySlug($slug);
+        $this->classroom->delete();
+
+        return true;
+    }
+
+    public function trashed($request)
+    {
+        $data = $this->classroom->onlyTrashed()->paginate($request->perPage ?? $this->classroom->getPerPage() );
+        return new ClassroomCollection($data);
+    }
+
+    public function hardDelete($slug)
+    {
+        $this->classroom = $this->classroom->where('slug', $slug)->withTrashed();
+        if ( $this->classroom->first() == null )
+            throw new  NotFoundException('Class');
+
+        $this->classroom = $this->classroom->first();
+
+        $this->classroom->assigments()->forceDelete();
+        $this->classroom->quizzes()->forceDelete();
+        $this->classroom->resources()->forceDelete();
+        $this->classroom->classroomUsers()->forceDelete();
+        $this->classroom->clearMediaCollection();
+        $this->classroom->forceDelete();
+
+        return true;
     }
 
     // validate incoming request
@@ -103,5 +158,24 @@ class ClassroomRepository implements ClassroomInterface
     {
         $classroom = self::getClassroomBySlug($slug);
         return new ClassroomResource($classroom, ['students' => true, 'teachers' => true]) ;
+    }
+
+    public function listStudents($request, $slug)
+    {
+        $this->classroom = $this->classroom->getBySlug($slug);
+
+        return new UserCollection($this->classroom->users()->paginate($request->perPage ?? $this->classroom->getPerPage()));
+    }
+
+    public function removeStudent($request, $slug)
+    {
+        $this->classroom = $this->classroom->getBySlug($slug);
+        $student = $this->classroom->classroomUsers()->with('user')->get()->where('user.email', $request->email);
+        if ($student->first() ==  null) {
+            throw new NotFoundException('Student');
+        }
+
+        $student->first()->delete();
+        return true;
     }
 }

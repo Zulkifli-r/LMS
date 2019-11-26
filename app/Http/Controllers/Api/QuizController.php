@@ -73,6 +73,11 @@ class QuizController extends Controller
 
     public function hardDelete()
     {
-        return apiResponse(200, $this->repository->hardDelete(Route::current()->resource));
+        return apiResponse(200, $this->repository->hardDelete(Route::current()->quiz));
+    }
+
+    public function attempt()
+    {
+        return apiResponse(200, $this->repository->attempt(Route::current()->quiz));
     }
 }

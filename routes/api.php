@@ -23,6 +23,12 @@ Route::group( ['namespace' => 'Api'], function(){
             Route::get('list', 'ClassroomController@list');
             Route::get('my-classroom', 'ClassroomController@myClassroom');
             Route::get('classroom-details/{slug}', 'ClassroomController@details');
+            Route::get('trashed', 'ClassroomController@trashed');
+            Route::get('{slug}/list-students', 'ClassroomController@listStudents');
+            Route::post('{slug}/remove-student', 'ClassroomController@removeStudent');
+            Route::post('{slug}/update', 'ClassroomController@update');
+            Route::get('{slug}/delete', 'ClassroomController@delete');
+            Route::get('{slug}/hard-delete', 'ClassroomController@hardDelete');
 
             Route::group(['prefix' => 'invitation'], function(){
                 Route::get('generate-public-invitation', 'InvitationController@generatePublicInvitation');
@@ -49,7 +55,9 @@ Route::group( ['namespace' => 'Api'], function(){
                     Route::get('{quiz}/publish', 'QuizController@publish');
                     Route::get('{quiz}/unpublish', 'QuizController@unpublish');
                     Route::get('{quiz}/delete', 'QuizController@delete');
-                    Route::get('{resource}/hard-delete', 'QuizController@hardDelete');
+                    Route::get('{quiz}/hard-delete', 'QuizController@hardDelete');
+
+                    Route::post('{quiz}/attempt', 'QuizController@attempt');
                     // Question section
                     Route::post('{quiz}/create-question', 'QuizController@createQuestion');
                     Route::post('{quiz}/update/{question}', 'QuizController@updateQuestion');

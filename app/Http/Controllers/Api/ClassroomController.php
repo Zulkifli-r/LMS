@@ -31,4 +31,36 @@ class ClassroomController extends Controller
     {
         return apiResponse(200,$this->repository->details($slug));
     }
+
+    public function update(Request $request, $slug)
+    {
+        return apiResponse(200, $this->repository->update($request, $slug));
+    }
+
+    public function delete($slug)
+    {
+        return apiResponse(200, $this->repository->delete($slug));
+    }
+
+    public function trashed(Request $request)
+    {
+        return apiResponse(200, $this->repository->trashed($request));
+    }
+
+    public function hardDelete($slug)
+    {
+        return apiResponse(200, $this->repository->hardDelete($slug));
+    }
+
+    public function listStudents(Request $request, $slug)
+    {
+        return apiResponse(200, $this->repository->listStudents($request, $slug));
+    }
+
+    public function removeStudent(Request $request, $slug)
+    {
+        return apiResponse(200, $this->repository->removeStudent($request, $slug));
+    }
+
+
 }
