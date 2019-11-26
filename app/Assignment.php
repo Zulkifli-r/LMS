@@ -13,7 +13,7 @@ class Assignment extends Model
 
     public function teachable()
     {
-        return $this->hasOne('App\Teachable','teachable_id');
+        return $this->hasOne('App\Teachable','teachable_id')->where('teachable_type', 'assignment');
     }
 
     public function save(array $options = [])

@@ -32,7 +32,7 @@ class Quiz extends Model implements HasMedia
 
     public function teachable()
     {
-        return $this->hasOne('App\Teachable','teachable_id','id');
+        return $this->hasOne('App\Teachable','teachable_id','id')->where('teachable_type','quizz');
     }
 
     public static function getById($id){

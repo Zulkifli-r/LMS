@@ -23,7 +23,7 @@ class Resource extends Model implements HasMedia
 
     public function teachable()
     {
-        return $this->hasOne('\App\Teachable','teachable_id');
+        return $this->hasOne('\App\Teachable','teachable_id')->where('teachable_type', 'resource');
     }
 
     public function user()

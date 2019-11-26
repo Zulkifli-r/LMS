@@ -102,7 +102,7 @@ class QuestionRepository
 
     private function choices($choices){
         foreach ($choices as $key => $value) {
-            $data[$key] = new \App\QuestionChoiceItem(['choice_text' => $value['text'], 'is_correct' => $value['is_correct']]);
+            $data[$key] = new \App\QuestionChoiceItem(['choice_text' => $value['choice_text'], 'is_correct' => $value['is_correct']]);
         }
 
         return $data;
