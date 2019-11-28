@@ -95,7 +95,7 @@ class QuestionRepository
             'content' => 'required|string',
             'answer' => 'nullable|required_if:question_type, fill-in|array|min:1',
             'choices' => 'required_if:question_type,==,multiple-choice|required_if:question_type,==,boolean|required_if:question_type,==,multiple-response|' . ( $data == 'multiple-response' ? 'array|min:1' : 'array:max:1' ),
-            'choices.*.text' => 'required|string',
+            'choices.*.choice_text' => 'required|string',
             'choices.*.is_correct' => 'required|boolean',
         ]);
     }
