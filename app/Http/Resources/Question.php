@@ -21,7 +21,7 @@ class Question extends JsonResource
         $res['content'] = $this->content;
         $res['answers'] = $this->answers;
         $res['created_by'] = new Users($this->user);
-        if (in_array($this->question_type, ['multiple-choice', 'boolean']) ) {
+        if (in_array($this->question_type, ['multiple-choice', 'boolean', 'multiple-response']) ) {
             foreach ($this->choiceItems as $key => $value) {
                 $res['choices'][$key]['choice_text'] = $value['choice_text'];
                 $res['choices'][$key]['is_correct'] = $value['is_correct'];
