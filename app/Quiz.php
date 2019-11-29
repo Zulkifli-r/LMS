@@ -48,4 +48,63 @@ class Quiz extends Model implements HasMedia
     {
         return $this->belongsToMany( 'App\Question' )->withPivot('weight')->withTimestamps();
     }
+
+    public function randomizeQuestions()
+    {
+        $questions = $this->questions()->with( 'choiceItems' )->get();
+
+        $questions = $questions->map( function ( $question )
+        {
+            if ( $question->choiceItems->count() > 0 )
+                $question->choiceItems = $question->choiceItems->shuffle();
+            return $question;
+        } );
+
+        return $questions;
+    }
+
+    public static function prepareSnapshot( $questions)
+    {
+        $questionSnapshots = collect([]);
+        $answerSnapshots = collect([]);
+
+
+        $questions->each( function ( $question ) use ( $questionSnapshots, $answerSnapshots )
+        {
+
+            $questionArray = [
+                'id' => \Str::random( 8 ),
+                'type' => $question->question_type,
+                'scoringMethod' => $question->scoring_method,
+                'content' => $question->content,
+            ];
+
+            $answerArray = [
+                'questionId' => $questionArray['id']
+            ];
+            // dd($question);
+
+            if ( $question->choiceItems->count() > 0 ) {
+                $questionArray[ 'choiceItems' ] = collect([]);
+                $question->choiceItems->each( function ( $choiceItem ) use ( $questionArray ) {
+                    $questionArray[ 'choiceItems' ]->push([
+                        'id' => \Str::random( 8 ),
+                        'choiceText' => $choiceItem->choice_text,
+                        'isCorrect' => $choiceItem->is_correct,
+                    ]);
+                } );
+            }
+
+            if ( $question->answers != null )
+                $questionArray[ 'answers' ] = $question->answers;
+
+            $questionSnapshots->push( $questionArray );
+            $answerSnapshots->push( $answerArray );
+        } );
+
+        return [
+            "questions" => $questionSnapshots ,
+            "answers" => $answerSnapshots
+        ];
+    }
 }

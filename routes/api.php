@@ -57,12 +57,15 @@ Route::group( ['namespace' => 'Api'], function(){
                     Route::get('{quiz}/delete', 'QuizController@delete')->middleware('classroom-teacher');
                     Route::get('{quiz}/hard-delete', 'QuizController@hardDelete')->middleware('classroom-teacher');
 
-                    Route::post('{quiz}/attempt', 'QuizController@attempt')->middleware('classroom-student');
                     // Question section
                     Route::post('{quiz}/create-question', 'QuizController@createQuestion')->middleware('classroom-teacher');
                     Route::post('{quiz}/update/{question}', 'QuizController@updateQuestion')->middleware('classroom-teacher');
                     Route::get('{quiz}/delete/{question}', 'QuizController@deleteQuestion')->middleware('classroom-teacher');
                     Route::get('{quiz}/force-delete/{question}', 'QuizController@forceDeleteQuestion')->middleware('classroom-teacher');
+
+                    // Attempt
+                    Route::post('{quiz}/attempt', 'QuizController@attempt')->middleware('classroom-student');
+                    Route::post('{quiz}/update', 'QuizController@attempt')->middleware('classroom-student');
                 });
 
                 Route::group(['prefix' => '{slug}/resource'], function(){
@@ -71,8 +74,8 @@ Route::group( ['namespace' => 'Api'], function(){
                     Route::get('trashed', 'ResourceController@trashed')->middleware('classroom-teacher');
 
                     Route::get('{resource}/details', 'ResourceController@details');
-                    Route::get('{resource}/delete', 'ResourceController@delete')->middleware('classroom-teacher');;
-                    Route::get('{resource}/hard-delete', 'ResourceController@hardDelete')->middleware('classroom-teacher'); ;
+                    Route::get('{resource}/delete', 'ResourceController@delete')->middleware('classroom-teacher');
+                    Route::get('{resource}/hard-delete', 'ResourceController@hardDelete')->middleware('classroom-teacher');
                 });
 
             });

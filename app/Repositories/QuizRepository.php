@@ -179,4 +179,12 @@ class QuizRepository
 
         return true;
     }
+
+    public function attempt($quiz)
+    {
+        $this->quiz = \App\Quiz::getById($quiz);
+
+        $attempt = new QuizAttemptRepository($this->classroom, $this->quiz);
+        return $attempt->start();
+    }
 }

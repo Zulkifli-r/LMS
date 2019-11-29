@@ -43,6 +43,6 @@ class TeachableUser extends Pivot implements HasMedia
 
     public function quizAttempts()
     {
-        return $this->hasMany( 'App\QuizAttempt', 'teachable_user_id' )->orderBy( 'attempt', 'desc' );
+        return $this->hasMany('App\QuizAttempt','teachable_user_id','id')->orderBy( 'attempt', 'desc' );
     }
 }
