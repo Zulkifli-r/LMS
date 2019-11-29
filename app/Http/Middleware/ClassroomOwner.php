@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\UnauthorizeException;
 use Closure;
 
 class ClassroomOwner
