@@ -38,7 +38,7 @@ Route::group( ['namespace' => 'Api'], function(){
 
             Route::group(['middleware'=>'classroom-resource'], function(){
                 Route::group(['prefix' => '{slug}/assignment'], function(){
-                    Route::post('create-assignment', 'AssignmentController@create');
+                    Route::post('create-assignment', 'AssignmentController@create')->middleware('classroom-teacher');
                     Route::get('list', 'AssignmentController@list');
                     Route::get('/view-assignment/{teachableId}', 'AssignmentController@viewAssignment');
                     Route::post('/{teachableId}/upload-submission', 'AssignmentController@uploadSubmission');
@@ -46,33 +46,33 @@ Route::group( ['namespace' => 'Api'], function(){
                 });
 
                 Route::group(['prefix' => '{slug}/quiz'], function(){
-                    Route::post('create-quiz', 'QuizController@create');
+                    Route::post('create-quiz', 'QuizController@create')->middleware('classroom-teacher');
                     Route::get('list', 'QuizController@list');
-                    Route::get('trashed', 'QuizController@trashed');
+                    Route::get('trashed', 'QuizController@trashed')->middleware('classroom-teacher');
 
                     Route::get('{quiz}/details', 'QuizController@details');
-                    Route::post('{quiz}/update', 'QuizController@update');
-                    Route::get('{quiz}/publish', 'QuizController@publish');
-                    Route::get('{quiz}/unpublish', 'QuizController@unpublish');
-                    Route::get('{quiz}/delete', 'QuizController@delete');
-                    Route::get('{quiz}/hard-delete', 'QuizController@hardDelete');
+                    Route::post('{quiz}/update', 'QuizController@update')->middleware('classroom-teacher');
+                    Route::get('{quiz}/publish', 'QuizController@publish')->middleware('classroom-teacher');
+                    Route::get('{quiz}/unpublish', 'QuizController@unpublish')->middleware('classroom-teacher');
+                    Route::get('{quiz}/delete', 'QuizController@delete')->middleware('classroom-teacher');
+                    Route::get('{quiz}/hard-delete', 'QuizController@hardDelete')->middleware('classroom-teacher');
 
-                    Route::post('{quiz}/attempt', 'QuizController@attempt');
+                    Route::post('{quiz}/attempt', 'QuizController@attempt')->middleware('classroom-student');
                     // Question section
-                    Route::post('{quiz}/create-question', 'QuizController@createQuestion');
-                    Route::post('{quiz}/update/{question}', 'QuizController@updateQuestion');
-                    Route::get('{quiz}/delete/{question}', 'QuizController@deleteQuestion');
-                    Route::get('{quiz}/force-delete/{question}', 'QuizController@forceDeleteQuestion');
+                    Route::post('{quiz}/create-question', 'QuizController@createQuestion')->middleware('classroom-teacher');
+                    Route::post('{quiz}/update/{question}', 'QuizController@updateQuestion')->middleware('classroom-teacher');
+                    Route::get('{quiz}/delete/{question}', 'QuizController@deleteQuestion')->middleware('classroom-teacher');
+                    Route::get('{quiz}/force-delete/{question}', 'QuizController@forceDeleteQuestion')->middleware('classroom-teacher');
                 });
 
                 Route::group(['prefix' => '{slug}/resource'], function(){
-                    Route::post('create', 'ResourceController@create');
+                    Route::post('create', 'ResourceController@create')->middleware('classroom-teacher');
                     Route::get('list', 'ResourceController@list');
-                    Route::get('trashed', 'ResourceController@trashed');
+                    Route::get('trashed', 'ResourceController@trashed')->middleware('classroom-teacher');
 
                     Route::get('{resource}/details', 'ResourceController@details');
-                    Route::get('{resource}/delete', 'ResourceController@delete');
-                    Route::get('{resource}/hard-delete', 'ResourceController@hardDelete');
+                    Route::get('{resource}/delete', 'ResourceController@delete')->middleware('classroom-teacher');;
+                    Route::get('{resource}/hard-delete', 'ResourceController@hardDelete')->middleware('classroom-teacher'); ;
                 });
 
             });

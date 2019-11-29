@@ -54,8 +54,12 @@ class Classroom extends Model implements HasMedia
 
     public function students()
     {
-        // return $this->hasMany( 'App\ClassroomUser' )->role( 'student' );
         return $this->classroomUsers()->role('student');
+    }
+
+    public function isStudent()
+    {
+        return $this->students->pluck('user_id')->contains(auth('api')->user()->id);
     }
 
     public function teachers()

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Exceptions\NotFoundException;
 use App\Notifications\ResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -91,6 +92,38 @@ class User extends Authenticatable implements HasMedia
     public static function getLoggedInUser()
     {
         return auth('api')->user();
+    }
+
+    public function teachableUsers($classroom)
+    {
+        return $this->belongsToMany(
+            'App\TeachableUser',
+            'App\ClassroomUser',
+             null,
+            'id',
+            null,
+            'classroom_user_id'
+        )->where('classroom_id', $classroom->id);
+    }
+
+    public function teachableUser($classroom, $teachable)
+    {
+        return $this->teachableUsers($classroom)->where('teachable_id', $teachable->teachable->id);
+    }
+
+    public function isClassroomStudent($classroom)
+    {
+        return  $this->classroomUsers->where('classroom_id', $classroom->id)->first()->hasRole('student');
+    }
+
+    public function isClassroomTeacher($classroom)
+    {
+        return  $this->classroomUsers->where('classroom_id', $classroom->id)->first()->hasRole('teacher');
+    }
+
+    public function isClassroomOwner($classroom)
+    {
+        return $this->classroom()->where('id', $classroom->id)->first();
     }
 
 }

@@ -14,17 +14,23 @@ class Question extends JsonResource
      */
     public function toArray($request)
     {
+        $classroom = \App\Classroom::getBySlug(\Route::current()->slug);
+
         $res['id'] = $this->id;
         $res['question_type'] = $this->question_type;
         $res['scoring_method'] = $this->scoring_method;
         $res['weight'] = $this->quizzes->first()->pivot->weight;
         $res['content'] = $this->content;
-        $res['answers'] = $this->answers;
+        if (!auth('api')->user()->isClassroomStudent($classroom)) {
+            $res['answers'] = $this->answers;
+        }
         $res['created_by'] = new Users($this->user);
         if (in_array($this->question_type, ['multiple-choice', 'boolean', 'multiple-response']) ) {
             foreach ($this->choiceItems as $key => $value) {
                 $res['choices'][$key]['choice_text'] = $value['choice_text'];
-                $res['choices'][$key]['is_correct'] = $value['is_correct'];
+                if (!auth('api')->user()->isClassroomStudent($classroom)) {
+                    $res['choices'][$key]['is_correct'] = $value['is_correct'];
+                }
             }
         }
         return $res;
