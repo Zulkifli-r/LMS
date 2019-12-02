@@ -119,7 +119,7 @@ class ClassroomRepository implements ClassroomInterface
 
         $this->classroom = $this->classroom->first();
 
-        $this->classroom->assigments()->forceDelete();
+        $this->classroom->assignments()->forceDelete();
         $this->classroom->quizzes()->forceDelete();
         $this->classroom->resources()->forceDelete();
         $this->classroom->classroomUsers()->forceDelete();

@@ -97,37 +97,43 @@ class Classroom extends Model implements HasMedia
 
     public function quizzes()
     {
-        return $this->hasManyThrough(
-            '\App\Quiz',
-            '\App\Teachable',
-            null,
-            'id',
-            null,
-            'teachable_id'
-        );
+        // return $this->hasManyThrough(
+        //     '\App\Quiz',
+        //     '\App\Teachable',
+        //     null,
+        //     'id',
+        //     null,
+        //     'teachable_id'
+        // );
+
+        return $this->teachables()->where('teachable_type', 'quizz');
     }
 
-    public function assigments()
+    public function assignments()
     {
-        return $this->hasManyThrough(
-            '\App\Assignment',
-            '\App\Teachable',
-            null,
-            'id',
-            null,
-            'teachable_id'
-        );
+        // return $this->hasManyThrough(
+        //     '\App\Assignment',
+        //     '\App\Teachable',
+        //     null,
+        //     'id',
+        //     null,
+        //     'teachable_id'
+        // );
+
+        return $this->teachables()->where('teachable_type', 'assignment');
     }
 
     public function resources()
     {
-        return $this->hasManyThrough(
-            '\App\Resource',
-            '\App\Teachable',
-            null,
-            'id',
-            null,
-            'teachable_id'
-        );
+        // return $this->hasManyThrough(
+        //     '\App\Resource',
+        //     '\App\Teachable',
+        //     null,
+        //     'id',
+        //     null,
+        //     'teachable_id'
+        // );
+
+        return $this->teachables()->where('teachable_type', 'resource');
     }
 }

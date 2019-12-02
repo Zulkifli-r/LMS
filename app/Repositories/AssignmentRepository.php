@@ -103,7 +103,7 @@ class AssignmentRepository {
 
     public function list($request)
     {
-         return new AssignmentCollection($this->classroom->assigments()->latest()->paginate($request->perPage ?? $this->assignment->getPerPage()));
+         return new AssignmentCollection($this->classroom->assignments()->latest()->paginate($request->perPage ?? $this->assignment->getPerPage()));
     }
 
     private function validateAssignment(array $data){
