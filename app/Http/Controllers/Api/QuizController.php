@@ -80,4 +80,9 @@ class QuizController extends Controller
     {
         return apiResponse(200, $this->repository->attempt(Route::current()->quiz));
     }
+
+    public function updateAttempt(Request $request)
+    {
+        return apiResponse(200, $this->repository->updateAttempt(Route::current()->quiz, $request));
+    }
 }

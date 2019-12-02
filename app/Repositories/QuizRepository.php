@@ -187,4 +187,11 @@ class QuizRepository
         $attempt = new QuizAttemptRepository($this->classroom, $this->quiz);
         return $attempt->start();
     }
+
+    public function updateAttempt($quiz, $request)
+    {
+        $this->quiz = \App\Quiz::getById($quiz);
+        $attempt = new QuizAttemptRepository($this->classroom, $this->quiz);
+        return $attempt->update($request);
+    }
 }

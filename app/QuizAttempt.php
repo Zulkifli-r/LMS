@@ -3,7 +3,10 @@
 namespace App;
 
 use App\Exceptions\NotFoundException;
+use App\Exceptions\ValidationException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Validator;
 
 class QuizAttempt extends Model
 {
@@ -32,7 +35,9 @@ class QuizAttempt extends Model
 
         if ( !$question ) return $this;
 
-        $answerMethod = 'answer' . studly_case( str_replace( '-', ' ', $question->type ) );
+        $answerMethod = 'answer' . \Str::studly( str_replace( '-', ' ', $question->type ) );
+
+
         $newAnswers = $this->$answerMethod( $answer, $question , $gradingMethod );
 
         $key = array_search($newAnswers['questionId'], array_column($answers->toArray(), 'questionId'));
@@ -41,7 +46,6 @@ class QuizAttempt extends Model
 
         $this->answers = $answers->toJson();
         $this->save();
-        return $this;
     }
 
     public function answerBoolean( Collection $answer, $question , $gradingMethod )
@@ -55,7 +59,7 @@ class QuizAttempt extends Model
             'questionId' => 'required|size:8',
             'answerId' => 'required|size:8',
         ] );
-        if ( $validator->fails() ) return null;
+        if ( $validator->fails() ) throw new ValidationException($validator->errors());
 
         $choiceItems = collect( $question->choiceItems );
 

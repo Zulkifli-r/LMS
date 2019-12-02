@@ -56,25 +56,27 @@ class QuizAttempt extends JsonResource
 
     private function answers(){
         $answers = json_decode($this->answers);
-
         foreach ($answers as $key => $value) {
-            $res[] = [
+            $res[$key] = [
                 'questionId' => $value->questionId,
                 'score' => array_key_exists('score', $value) ? $value->score : 0 ,
                 'answeredAt' => array_key_exists('answeredAt', $value) ?
-                    \Carbon\Carbon::parse( $value->answeredAt->date )->toIso8601String() : null,
+                    \Carbon\Carbon::parse( $value->answeredAt )->toIso8601String() : null,
             ];
 
             if (array_key_exists('questionType', $value)) {
                 switch( $value->questionType ) {
                     case 'multiple-choice':
                     case 'boolean':
-                        return array_merge( $res, [ 'answerId' => $value->answerId ] );
+                        $res[$key]['answerId']= $value->answerId;
+                        break;
                     case 'multiple-response':
                     case 'fill-in':
-                        return array_merge( $res, [ 'answers' => $value->answers ] );
+                        $res[$key]['answers']= $value->answers;
+                        break;
                     case 'essay':
-                        return array_merge( $res, [ 'content' => $value->content ] );
+                        $res[$key]['content']= $value->content;
+                        break;
                 }
             }
         }

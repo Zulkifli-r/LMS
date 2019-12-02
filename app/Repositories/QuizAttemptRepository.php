@@ -51,8 +51,8 @@ class QuizAttemptRepository
             $this->quizAttempt->answers = $snapshot['answers']->toJson();
         }
 
-
-        $this->quizAttempt->attempt = $unfinishedAttempt ? ($previousAttempts ?$previousAttempts->max( 'attempt' ):0) + 1 : $unfinishedAttempt->attempt;
+        $this->quizAttempt->attempt = $unfinishedAttempt ? $unfinishedAttempt->attempt : $previousAttempts->max('attempt') + 1;
+        // ($previousAttempts ? $previousAttempts->max( 'attempt' ):0) + 1 : $unfinishedAttempt->attempt;
 
         \DB::transaction(function(){
             $this->quizAttempt->save();
@@ -67,15 +67,30 @@ class QuizAttemptRepository
 
     public function update($request)
     {
+        // dd($request->all());
         $validatedData = $this->validateUpdate($request->all());
 
         if ($validatedData->fails()) {
             throw new ValidationException($validatedData->errors());
         }
 
+        if ( ! $this->classroom->isStudent()) {
+            throw new UnauthorizeException('not this classrooms student');
+        }
+
+        $this->teachableUser = $this->user->teachableUser($this->classroom,$this->quiz)->first();
+        if (!$this->teachableUser) {
+            throw new UnauthorizeException('this quiz is not for you');
+        }
+
+        $this->quizAttempt = \App\QuizAttempt::getByTeachableUserId($this->teachableUser->id);
+
+        // dd($request->answer);
+
         switch ($request->context) {
             case 'answer':
-                $this->quizAttempt->answer( collect( $request->answer ) , $this->quizAttempt->grading_method );
+                // dd(collect( $request->answer ) , $this->quizAttempt);
+                $this->quizAttempt->answer( collect($request->answer) , $this->quizAttempt->grading_method );
                 break;
             case 'scoring':
                 $this->quizAttempt->scoring( collect($request->scores) );
