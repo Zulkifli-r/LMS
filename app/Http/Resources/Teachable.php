@@ -41,6 +41,7 @@ class Teachable extends JsonResource
         }
 
         $res['created_by'] = new Users($this->user);
+        $res['available_at'] = $this->available_at;
         $res['expires_at'] = $this->expires_at;
         $res['due_date'] = Carbon::parse($this->expires_at)->diffForHumans();
         $res['pass_tresshold'] = $this->pass_treshold;
