@@ -6,6 +6,8 @@ use App\Classroom;
 use App\Exceptions\ValidationException;
 use App\Http\Resources\Quiz;
 use App\Http\Resources\QuizCollection;
+use App\Http\Resources\TeachableQuiz;
+use App\Http\Resources\TeachableQuizCollection;
 use Illuminate\Support\Facades\Validator;
 
 class QuizRepository
@@ -133,7 +135,7 @@ class QuizRepository
         $perPage = $request->has('perPage')?$request->perPage:$this->quiz->getPerPage();
         $data = $this->classroom->quizzes()->paginate($perPage);
 
-        return QuizCollection::make($data);
+        return new TeachableQuizCollection($data);
     }
 
     public function details($request, $quiz)
