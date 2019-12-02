@@ -15,9 +15,9 @@ class Assignment extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'description' => $this->description,
+            'id' => $this->assignment->id,
+            'title' => $this->assignment->title,
+            'description' => $this->assignment->description,
             'created_by' => new Users($this->user),
         ];
     }
