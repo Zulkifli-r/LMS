@@ -8,6 +8,7 @@ use App\Exceptions\ValidationException;
 use App\Http\Resources\Classes;
 use App\Http\Resources\Classroom as ClassroomResource;
 use App\Http\Resources\ClassroomCollection;
+use App\Http\Resources\ClassroomUserCollection;
 use App\Http\Resources\UserCollection;
 use App\Repositories\Interfaces\ClassroomInterface;
 use App\Repositories\Traits\RequestParameter;
@@ -164,7 +165,7 @@ class ClassroomRepository implements ClassroomInterface
     {
         $this->classroom = $this->classroom->getBySlug($slug);
 
-        return new UserCollection($this->classroom->users()->paginate($request->perPage ?? $this->classroom->getPerPage()));
+        return new ClassroomUserCollection($this->classroom->students()->paginate($request->perPage ?? $this->classroom->getPerPage()));
     }
 
     public function removeStudent($request, $slug)
