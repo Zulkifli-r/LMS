@@ -8,6 +8,7 @@ use App\Exceptions\NotFoundException;
 use App\Exceptions\ValidationException;
 use App\Http\Resources\Resource;
 use App\Http\Resources\ResourceCollection;
+use App\Http\Resources\TeachableMediaCollection;
 use Illuminate\Support\Facades\Validator;
 use Jwplayer\JwplatformAPI;
 
@@ -65,9 +66,10 @@ class ResourceRepository
 
     public function list($request)
     {
-        $resources = $this->classroom->resources()->paginate($request->perPage??$this->resource->getPerPage());
-
-        return new ResourceCollection($resources);
+        $perPage = $request->has('perPage')?$request->perPage:$this->resource->getPerPage();
+        $data = $this->classroom->resources()->paginate($perPage);
+        // dd($data);
+        return new TeachableMediaCollection($data);
     }
 
     public function details($resource)
