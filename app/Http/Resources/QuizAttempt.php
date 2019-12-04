@@ -22,30 +22,37 @@ class QuizAttempt extends JsonResource
      */
     public function toArray($request)
     {
-        $res = [
-            'id' => $this->id,
-            'attempt' => $this->attempt,
-            'grading_method' => $this->grading_method,
 
-            'completed_at' => $this->completed_at ? $this->completed_at->toIso8601String() : null,
-            'completed_at_for_humans' => $this->completed_at ? $this->completed_at->diffForHumans() : null,
-            'created_at' => $this->created_at ? $this->created_at->toIso8601String() : null,
-            'created_at_for_humans' => $this->created_at ? $this->created_at->diffForHumans() : null,
-        ];
+        if ($this->id) {
+            $res = [
+                'id' => $this->id,
+                'attempt' => $this->attempt,
+                'grading_method' => $this->grading_method,
+                'completed_at' => $this->completed_at ? $this->completed_at->toIso8601String() : null,
+                'completed_at_for_humans' => $this->completed_at ? $this->completed_at->diffForHumans() : null,
+                'created_at' => $this->created_at ? $this->created_at->toIso8601String() : null,
+                'created_at_for_humans' => $this->created_at ? $this->created_at->diffForHumans() : null,
+            ];
+            if ($this->includes->has('answers') ) {
+                $res['answers'] = $this->answers();
+            }
 
-        if ($this->includes->has('answers')) {
-            $res['answers'] = $this->answers();
+            if ($this->includes->has('grade')) {
+                $res['grade'] = new Grade($this->grade);
+            }
+
+            if ($this->includes->has('questions')) {
+                $res['questions'] = $this->questions();
+            }
+
+            if ($this->includes->has('progress')) {
+                $res['progress'] = $this->progres();
+            }
+
+            return $res;
         }
 
-        if ($this->includes->has('grade')) {
-            $res['grade'] = new Grade($this->grade);
-        }
-
-        if ($this->includes->has('questions')) {
-            $res['questions'] = $this->questions();
-        }
-
-        return $res;
+        return null;
     }
 
     public function includes($includes = [])
@@ -114,5 +121,12 @@ class QuizAttempt extends JsonResource
         }
 
         return $choice;
+    }
+
+    private function progres(){
+        $answers = collect(json_decode($this->answers));
+        $count = $answers->count();
+        $answered = $answers->where('answeredAt','<>','')->count();
+        return ($answered/$count) * 100;
     }
 }

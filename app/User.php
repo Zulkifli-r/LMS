@@ -103,7 +103,7 @@ class User extends Authenticatable implements HasMedia
             'id',
             null,
             'classroom_user_id'
-        )->where('classroom_id', $classroom->id);
+        )->where('classroom_id', is_object($classroom)?$classroom->id:$classroom);
     }
 
     public function teachableUser($classroom, $teachable)
@@ -113,17 +113,17 @@ class User extends Authenticatable implements HasMedia
 
     public function isClassroomStudent($classroom)
     {
-        return  $this->classroomUsers->where('classroom_id', $classroom->id)->first()->hasRole('student');
+        return  $this->classroomUsers->where('classroom_id', is_object($classroom)?$classroom->id:$classroom)->first()->hasRole('student');
     }
 
     public function isClassroomTeacher($classroom)
     {
-        return  $this->classroomUsers->where('classroom_id', $classroom->id)->first()->hasRole('teacher');
+        return  $this->classroomUsers->where('classroom_id', is_object($classroom)?$classroom->id:$classroom)->first()->hasRole('teacher');
     }
 
     public function isClassroomOwner($classroom)
     {
-        return $this->classroom()->where('id', $classroom->id)->first();
+        return $this->classroom()->where('id', is_object($classroom)?$classroom->id:$classroom)->first();
     }
 
 }

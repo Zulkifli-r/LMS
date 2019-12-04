@@ -23,7 +23,12 @@ class Quiz extends JsonResource
      */
     public function toArray($request)
     {
-
+        // $user = auth('api')->user();
+        // $teachableUser = $user->teachableUser($this->classroom,$this->quiz)->first();
+        // $quizAttempt = \App\QuizAttempt::getByTeachableUserId($teachableUser->id);
+        // dd(
+        //     $quizAttempt
+        // );
         if ($this->resource instanceof \App\Quiz) {
             $res = [
                 'id' => $this->id,
@@ -51,6 +56,17 @@ class Quiz extends JsonResource
             if ($this->includes->has('questions')) {
                 $res['quiz']['questions'] = new QuestionCollection($this->quiz->questions);
             }
+
+            $user = auth('api')->user();
+
+            if ($user->isClassroomStudent($this->classroom_id)) {
+                $teachableUser = $user->teachableUser($this->classroom,$this->quiz)->first();
+                $quizAttempt = \App\QuizAttempt::getByTeachableUserId($teachableUser->id);
+                $res['quiz_attempt'] = new QuizAttempt($quizAttempt, ['questions' => true, 'answers'=>true, 'progress' => true]);
+            }
+
+
+
         }
 
         return $res;
