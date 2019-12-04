@@ -6,8 +6,7 @@ use App\Classroom;
 use App\Exceptions\ValidationException;
 use App\Http\Resources\Quiz;
 use App\Http\Resources\QuizCollection;
-use App\Http\Resources\TeachableQuiz;
-use App\Http\Resources\TeachableQuizCollection;
+use App\Teachable;
 use Illuminate\Support\Facades\Validator;
 
 class QuizRepository
@@ -20,7 +19,7 @@ class QuizRepository
 
     public function __construct(Classroom $classroom, $teachable = null) {
         $this->classroom = $classroom;
-        $this->teachable = $teachable?Teachable::find($teachable):null;
+        $this->teachable = $teachable?Teachable::findOrNotFound($teachable):null;
         $this->quiz = new \App\Quiz();
     }
 
@@ -32,14 +31,16 @@ class QuizRepository
             throw new ValidationException($validData->errors());
         }
 
-        \DB::transaction(function() use($data) {
+        $teachable = new \App\Teachable();
+
+        \DB::transaction(function() use($data, $teachable) {
             // create/update quizz
             $this->quiz->fill($data->only($this->quiz->getFillable()));
 
             $this->quiz->grading_method = 'standard';
             $this->quiz->save();
             // create teachable
-            $teachable = new \App\Teachable();
+
             $teachable = $teachable->fill($data->only($teachable->getFillable()));
             $teachable->teachable_type = self::TEACHABLE_TYPE;
             $teachable->classroom_id = $this->classroom->id;
@@ -54,12 +55,12 @@ class QuizRepository
                 $teachable->teachableUsers()->save($teachable_user);
             }
         });
-        return new Quiz($this->quiz);
+        return new Quiz($teachable);
     }
 
-    public function update($data, $quiz)
+    public function update($data)
     {
-        $this->quiz = \App\Quiz::getById($quiz);
+        $this->quiz = $this->teachable->quiz;
 
         $validData = $this->validateQuizData($data->all());
 
@@ -72,46 +73,44 @@ class QuizRepository
             $this->quiz->fill($data->only($this->quiz->getFillable()));
             $this->quiz->save();
             // update teachable
-            $teachable = $this->quiz->teachable;
+            $teachable = $this->teachable;
             $teachable = $teachable->fill($data->only($teachable->getFillable()));
             $this->quiz->teachable()->save($teachable);
         });
-        return new Quiz($this->quiz);
+        return new Quiz($this->teachable);
     }
 
-    public function publish($quiz)
+    public function publish()
     {
-        $this->quiz = \App\Quiz::getById($quiz);
-        $this->quiz->teachable->available_at = \Carbon\Carbon::now();
-        $this->quiz->teachable->save();
+        $this->teachable->available_at = \Carbon\Carbon::now();
+        $this->teachable->save();
 
         return true;
     }
 
-    public function unpublish($quiz)
+    public function unpublish()
     {
-        $this->quiz = \App\Quiz::getById($quiz);
-        $this->quiz->teachable->available_at = null;
-        $this->quiz->teachable->save();
+        $this->teachable->available_at = null;
+        $this->teachable->save();
 
         return true;
     }
 
-    public function createQuestion($data, $quiz)
+    public function createQuestion($data)
     {
-        $question = new QuestionRepository($this->classroom, $quiz);
+        $question = new QuestionRepository($this->classroom, $this->teachable->quiz);
         return $question->create($data);
     }
 
-    public function updateQuestion($data, $quiz, $question)
+    public function updateQuestion($data, $question)
     {
-        $question = new QuestionRepository($this->classroom, $quiz, $question);
+        $question = new QuestionRepository($this->classroom, $this->teachable->quiz, $question);
         return $question->update($data);
     }
 
-    public function deleteQuestion($quiz, $question)
+    public function deleteQuestion($question)
     {
-        $question = new QuestionRepository($this->classroom, $quiz, $question);
+        $question = new QuestionRepository($this->classroom, $this->teachable->quiz, $question);
         return $question->delete();
     }
 
@@ -133,17 +132,14 @@ class QuizRepository
     public function list($request)
     {
         $perPage = $request->has('perPage')?$request->perPage:$this->quiz->getPerPage();
-        $data = $this->classroom->quizzes()->paginate($perPage);
+        $data = $this->classroom->quizzes()->latest()->paginate($perPage);
 
-        return new TeachableQuizCollection($data);
+        return new QuizCollection($data);
     }
 
-    public function details($request, $quiz)
+    public function details($request)
     {
-
-        $this->quiz = \App\Quiz::getById($quiz);
-
-        $res = new Quiz($this->quiz);
+        $res = new Quiz($this->teachable);
 
         $includes = [];
 
@@ -154,13 +150,9 @@ class QuizRepository
         return $res->includes($includes);
     }
 
-    public function delete($quiz)
+    public function delete()
     {
-        $this->quiz = \App\Quiz::getById($quiz);
-
-        if ($this->quiz->delete()) {
-            return true;
-        }
+        return $this->teachable->delete();
     }
 
     public function trashed($request)
@@ -170,30 +162,29 @@ class QuizRepository
         return new QuizCollection($quiz);
     }
 
-    public function hardDelete($quiz)
+    public function hardDelete()
     {
-        // force delete resource and clear media collection
-        $this->quiz = \App\Quiz::getById($quiz);
-        $this->quiz->teachable->teachableUsers()->delete();
-        $this->quiz->teachable->forceDelete();
-        $this->quiz->clearMediaCollection();
-        $this->quiz->forceDelete();
+        \DB::transaction(function(){
+            // force delete resource and clear media collection
+            $this->teachable->teachableUsers()->delete();
+            $this->teachable->quiz->questions()->forceDelete();
+            $this->quiz->clearMediaCollection();
+            $this->teachable->quiz->forceDelete();
+            $this->teachable->forceDelete();
+        });
 
         return true;
     }
 
-    public function attempt($quiz)
+    public function attempt()
     {
-        $this->quiz = \App\Quiz::getById($quiz);
-
-        $attempt = new QuizAttemptRepository($this->classroom, $this->quiz);
+        $attempt = new QuizAttemptRepository($this->classroom, $this->teachable->quiz);
         return $attempt->start();
     }
 
-    public function updateAttempt($quiz, $request)
+    public function updateAttempt($request)
     {
-        $this->quiz = \App\Quiz::getById($quiz);
-        $attempt = new QuizAttemptRepository($this->classroom, $this->quiz);
+        $attempt = new QuizAttemptRepository($this->classroom, $this->teachable->quiz);
         return $attempt->update($request);
     }
 }

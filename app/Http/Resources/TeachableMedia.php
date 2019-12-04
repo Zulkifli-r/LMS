@@ -17,7 +17,7 @@ class TeachableMedia extends JsonResource
     public function toArray($request)
     {
 
-        $res = [
+        $res['resource'] = [
             'id' => $this->source->id,
             'type' => $this->source->type,
             'title' => $this->source->title,
@@ -26,6 +26,7 @@ class TeachableMedia extends JsonResource
             'created_by' => new Users($this->source->user),
             'media' => new Media($this->source->getMedia(strtolower($this->source->type))->first())
         ];
+        $res['teachable' ] = new Teachable($this);
 
         return $res;
     }

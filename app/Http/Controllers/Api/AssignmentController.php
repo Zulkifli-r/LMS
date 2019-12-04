@@ -41,4 +41,19 @@ class AssignmentController extends Controller
     {
         return apiResponse(200, $this->repository->uploadSubmission($request), 'Your submission has been successfully uploaded');
     }
+
+    public function delete()
+    {
+        return apiResponse(200, $this->repository->delete(), 'Assignment deleted');
+    }
+
+    public function trashed()
+    {
+        return apiResponse(200, $this->repository->trashed());
+    }
+
+    public function hardDelete()
+    {
+        return apiResponse(200, $this->repository->hardDelete(), 'Assignment is really gone');
+    }
 }

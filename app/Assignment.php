@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Exceptions\NotFoundException;
 use Illuminate\Database\Eloquent\Model;
 
 class Assignment extends Model
@@ -23,5 +24,15 @@ class Assignment extends Model
         }
 
         parent::save($options);
+    }
+
+    public function findOrNotFound($id)
+    {
+        $assignment = self::where('id', $id);
+        if($assignment->first()){
+            return $assignment->first();
+        }
+
+        throw new NotFoundException('Assignment');
     }
 }

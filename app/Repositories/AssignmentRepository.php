@@ -25,7 +25,7 @@ class AssignmentRepository {
 
     public function __construct(Classroom $classroom, $teachable = null) {
         $this->classroom = $classroom;
-        $this->teachable = $teachable?Teachable::find($teachable):null;
+        $this->teachable = $teachable?Teachable::findOrNotFound($teachable):null;
         $this->assignment = new \App\Assignment();
         // $this->classroomUser = $this->classroom->classroomUser();
     }
@@ -54,6 +54,8 @@ class AssignmentRepository {
             $teachable->teachable_type = self::TEACHABLE_TYPE;
             $teachable->classroom_id = $classroom->id;
             $teachable->created_by = auth('api')->user()->id;
+            $teachable->available_at = \Carbon\Carbon::now();
+
             $this->assignment->teachable()->save($teachable);
 
             // create teachable_user
@@ -72,9 +74,19 @@ class AssignmentRepository {
 
     public function view()
     {
-        $teachableUser = $this->teachable->teachableUser($this->classroom->classroomUser());
+        $includes = [];
+        $teachableUser = null;
 
-        return new TeachableResource($this->teachable, ['assignment'=>true], $teachableUser);
+        // response for student
+        if (auth('api')->user()->isClassroomStudent($this->classroom)) {
+            $teachableUser = $this->teachable->teachableUser($this->classroom->classroomUser());
+            $includes['assignment'] = true;
+        }
+        else{
+            $includes['assignments'] = true;
+        }
+
+        return new AssignmentResource($this->teachable, $includes, $teachableUser);
     }
 
     public function viewSubmission($teachableId)
@@ -104,6 +116,27 @@ class AssignmentRepository {
     public function list($request)
     {
          return new AssignmentCollection($this->classroom->assignments()->latest()->paginate($request->perPage ?? $this->assignment->getPerPage()));
+    }
+
+    public function delete()
+    {
+        return $this->teachable->delete();
+    }
+
+    public function trashed()
+    {
+        return new AssignmentCollection($this->classroom->assignments()->onlyTrashed()->paginate($request->perPage ?? $this->assignment->getPerPage()));
+    }
+
+    public function hardDelete()
+    {
+        \DB::transaction(function(){
+            $this->teachable->assignment->delete();
+            $this->teachable->teachableUsers()->delete();
+            $this->teachable->forceDelete();
+        });
+
+        return true;
     }
 
     private function validateAssignment(array $data){

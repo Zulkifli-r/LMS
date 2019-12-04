@@ -41,8 +41,11 @@ Route::group( ['namespace' => 'Api'], function(){
                     Route::post('create-assignment', 'AssignmentController@create')->middleware('classroom-teacher');
                     Route::get('list', 'AssignmentController@list');
                     Route::get('/view-assignment/{teachableId}', 'AssignmentController@viewAssignment');
-                    Route::post('/{teachableId}/upload-submission', 'AssignmentController@uploadSubmission');
+                    Route::post('/{teachableId}/upload-submission', 'AssignmentController@uploadSubmission')->middleware('classroom-student');
                     Route::get('/{teachableId}/list-submission/', 'AssignmentController@listSubmission');
+                    Route::post('{teachableId}/delete', 'AssignmentController@delete');
+                    Route::get('/trashed', 'AssignmentController@trashed');
+                    Route::post('{teachableId}/hard-delete', 'AssignmentController@hardDelete');
                 });
 
                 Route::group(['prefix' => '{slug}/quiz'], function(){
@@ -50,32 +53,31 @@ Route::group( ['namespace' => 'Api'], function(){
                     Route::get('list', 'QuizController@list');
                     Route::get('trashed', 'QuizController@trashed')->middleware('classroom-teacher');
 
-                    Route::get('{quiz}/details', 'QuizController@details');
-                    Route::post('{quiz}/update', 'QuizController@update')->middleware('classroom-teacher');
-                    Route::get('{quiz}/publish', 'QuizController@publish')->middleware('classroom-teacher');
-                    Route::get('{quiz}/unpublish', 'QuizController@unpublish')->middleware('classroom-teacher');
-                    Route::get('{quiz}/delete', 'QuizController@delete')->middleware('classroom-teacher');
-                    Route::get('{quiz}/hard-delete', 'QuizController@hardDelete')->middleware('classroom-teacher');
+                    Route::get('{teachableId}/details', 'QuizController@details');
+                    Route::post('{teachableId}/update', 'QuizController@update')->middleware('classroom-teacher');
+                    Route::post('{teachableId}/publish', 'QuizController@publish')->middleware('classroom-teacher');
+                    Route::post('{teachableId}/unpublish', 'QuizController@unpublish')->middleware('classroom-teacher');
+                    Route::post('{teachableId}/delete', 'QuizController@delete')->middleware('classroom-teacher');
+                    Route::post('{teachableId}/hard-delete', 'QuizController@hardDelete')->middleware('classroom-teacher');
 
                     // Question section
-                    Route::post('{quiz}/create-question', 'QuizController@createQuestion')->middleware('classroom-teacher');
-                    Route::post('{quiz}/update/{question}', 'QuizController@updateQuestion')->middleware('classroom-teacher');
-                    Route::get('{quiz}/delete/{question}', 'QuizController@deleteQuestion')->middleware('classroom-teacher');
-                    Route::get('{quiz}/force-delete/{question}', 'QuizController@forceDeleteQuestion')->middleware('classroom-teacher');
+                    Route::post('{teachableId}/create-question', 'QuizController@createQuestion')->middleware('classroom-teacher');
+                    Route::post('{teachableId}/update/{question}', 'QuizController@updateQuestion')->middleware('classroom-teacher');
+                    Route::post('{teachableId}/delete/{question}', 'QuizController@deleteQuestion')->middleware('classroom-teacher');
+                    Route::get('{teachableId}/force-delete/{question}', 'QuizController@forceDeleteQuestion')->middleware('classroom-teacher');
 
                     // Attempt
-                    Route::post('{quiz}/attempt', 'QuizController@attempt')->middleware('classroom-student');
-                    Route::post('{quiz}/update-attempt', 'QuizController@updateAttempt')->middleware('classroom-student');
+                    Route::post('{teachableId}/attempt', 'QuizController@attempt')->middleware('classroom-student');
+                    Route::post('{teachableId}/update-attempt', 'QuizController@updateAttempt')->middleware('classroom-student');
                 });
 
                 Route::group(['prefix' => '{slug}/resource'], function(){
                     Route::post('create', 'ResourceController@create')->middleware('classroom-teacher');
                     Route::get('list', 'ResourceController@list');
                     Route::get('trashed', 'ResourceController@trashed')->middleware('classroom-teacher');
-
-                    Route::get('{resource}/details', 'ResourceController@details');
-                    Route::get('{resource}/delete', 'ResourceController@delete')->middleware('classroom-teacher');
-                    Route::get('{resource}/hard-delete', 'ResourceController@hardDelete')->middleware('classroom-teacher');
+                    Route::get('{teachableId}/details', 'ResourceController@details');
+                    Route::post('{teachableId}/delete', 'ResourceController@delete')->middleware('classroom-teacher');
+                    Route::post('{teachableId}/hard-delete', 'ResourceController@hardDelete')->middleware('classroom-teacher');
                 });
 
             });

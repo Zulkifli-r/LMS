@@ -24,7 +24,7 @@ class TeachableUser extends JsonResource
         $res['user'] = new Users($this->classroomUser->user);
 
         $media = $this->getMedia('submission');
-        $res['submission'] = $media->first() ? $media->first()->getUrl():null;
+        $res['submission'] = $media->first() ? new Media($media->first()):null;
 
         return $res;
     }

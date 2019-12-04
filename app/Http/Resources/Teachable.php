@@ -29,7 +29,7 @@ class Teachable extends JsonResource
         $res = [];
         $res['id'] = $this->id;
         $res['teachable_type'] = $this->teachable_type;
-
+        $res['max_attempts'] = $this->max_attempts_count;
         if (collect($this->includes)->has('assignment')) {
             $res['assignment'] = new Assignment($this->assignment);
             $res['submission'] = new Media($this->teachableUser->getMedia('submission')->first());

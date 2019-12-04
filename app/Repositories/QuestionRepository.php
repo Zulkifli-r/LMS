@@ -14,7 +14,7 @@ class QuestionRepository
 
     public function __construct($classroom, $quiz, $question = null) {
         $this->classroom = $classroom;
-        $this->quiz = \App\Quiz::getById($quiz);
+        $this->quiz = $quiz;
         $this->question = $question ? \App\Question::getById($question) :new \App\Question();
     }
 
@@ -74,6 +74,7 @@ class QuestionRepository
     public function delete()
     {
         \DB::transaction(function(){
+            $this->quiz->questions()->detach($this->question->id);
             $this->question->delete();
         });
         return true;

@@ -18,7 +18,7 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         UserRegistered::class => [
             SendUserRegisteredEmail::class,
-            SubscribeUserToMailchimp::class
+            // SubscribeUserToMailchimp::class
         ],
     ];
 

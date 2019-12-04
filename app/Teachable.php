@@ -71,4 +71,14 @@ class Teachable extends Model implements HasMedia
     {
         return $this->belongsTo('App\Resource', 'teachable_id');
     }
+
+    public static function findOrNotFound($id)
+    {
+        $teachable = self::withTrashed()->where('id', $id);
+        if($teachable->first()){
+            return $teachable->first();
+        }
+
+        throw new NotFoundException('Teachable');
+    }
 }

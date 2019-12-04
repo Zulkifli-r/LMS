@@ -23,32 +23,32 @@ class QuizController extends Controller
 
     public function createQuestion(Request $request)
     {
-        return apiResponse(200, $this->repository->createQuestion($request, Route::current()->quiz));
+        return apiResponse(200, $this->repository->createQuestion($request));
     }
 
     public function updateQuestion(Request $request)
     {
-        return apiResponse(200, $this->repository->updateQuestion($request, Route::current()->quiz, Route::current()->question ));
+        return apiResponse(200, $this->repository->updateQuestion($request, Route::current()->question ));
     }
 
     public function deleteQuestion()
     {
-        return apiResponse(200, $this->repository->deleteQuestion(Route::current()->quiz, Route::current()->question ));
+        return apiResponse(200, $this->repository->deleteQuestion(Route::current()->question ));
     }
 
     public function update(Request $request)
     {
-        return apiResponse(200, $this->repository->update($request, Route::current()->quiz));
+        return apiResponse(200, $this->repository->update($request));
     }
 
     public function publish()
     {
-        return apiResponse(200, $this->repository->publish(Route::current()->quiz));
+        return apiResponse(200, $this->repository->publish());
     }
 
     public function unpublish()
     {
-        return apiResponse(200, $this->repository->unpublish(Route::current()->quiz));
+        return apiResponse(200, $this->repository->unpublish());
     }
 
     public function list(Request $request)
@@ -58,12 +58,12 @@ class QuizController extends Controller
 
     public function details(Request $request)
     {
-        return apiResponse(200, $this->repository->details($request, Route::current()->quiz));
+        return apiResponse(200, $this->repository->details($request));
     }
 
     public function delete()
     {
-        return apiResponse(200, $this->repository->delete(Route::current()->quiz));
+        return apiResponse(200, $this->repository->delete(), 'Quiz deleted');
     }
 
     public function trashed(Request $request)
@@ -73,16 +73,16 @@ class QuizController extends Controller
 
     public function hardDelete()
     {
-        return apiResponse(200, $this->repository->hardDelete(Route::current()->quiz));
+        return apiResponse(200, $this->repository->hardDelete(), 'Quiz hard deleted');
     }
 
     public function attempt()
     {
-        return apiResponse(200, $this->repository->attempt(Route::current()->quiz));
+        return apiResponse(200, $this->repository->attempt());
     }
 
     public function updateAttempt(Request $request)
     {
-        return apiResponse(200, $this->repository->updateAttempt(Route::current()->quiz, $request));
+        return apiResponse(200, $this->repository->updateAttempt($request));
     }
 }

@@ -9,6 +9,7 @@ use App\Exceptions\ValidationException;
 use App\Http\Resources\Resource;
 use App\Http\Resources\ResourceCollection;
 use App\Http\Resources\TeachableMediaCollection;
+use App\Teachable;
 use Illuminate\Support\Facades\Validator;
 use Jwplayer\JwplatformAPI;
 
@@ -21,7 +22,7 @@ class ResourceRepository
 
     public function __construct(Classroom $classroom, $teachable = null) {
         $this->classroom = $classroom;
-        $this->teachable = $teachable?Teachable::find($teachable):new \App\Teachable();
+        $this->teachable = $teachable?Teachable::findOrNotFound($teachable):null;
         $this->resource = new \App\Resource();
     }
 
@@ -67,25 +68,19 @@ class ResourceRepository
     public function list($request)
     {
         $perPage = $request->has('perPage')?$request->perPage:$this->resource->getPerPage();
-        $data = $this->classroom->resources()->paginate($perPage);
-        // dd($data);
+        $data = $this->classroom->resources()->latest()->paginate($perPage);
+
         return new TeachableMediaCollection($data);
     }
 
-    public function details($resource)
+    public function details()
     {
-        $this->resource = \App\Resource::getById($resource);
-
-        return new Resource($this->resource);
+        return new Resource($this->teachable);
     }
 
-    public function delete($resource)
+    public function delete()
     {
-        $this->resource = \App\Resource::getById($resource);
-
-        if ($this->resource->delete()) {
-            return true;
-        }
+        return $this->teachable->delete();
     }
 
     public function trashed($request)
@@ -95,14 +90,15 @@ class ResourceRepository
         return new ResourceCollection($resource);
     }
 
-    public function hardDelete($resource)
+    public function hardDelete()
     {
         // force delete resource and clear media collection
-        $this->resource = \App\Resource::getById($resource);
-        $this->resource->teachable->teachableUsers()->delete();
-        $this->resource->teachable->forceDelete();
-        $this->resource->clearMediaCollection();
-        $this->resource->forceDelete();
+        \DB::transaction(function(){
+            $this->teachable->resource->clearMediaCollection();
+            $this->teachable->resource->forceDelete();
+            $this->teachable->teachableUsers()->delete();
+            $this->teachable->forceDelete();
+        });
 
         return true;
     }
@@ -150,7 +146,7 @@ class ResourceRepository
         $this->resource->save();
     }
     private function handleUploadLink($request){
-        $this->resource->data = ['link' => $request->link];
+        $this->resource->data = ['link' => $request->Link];
         $this->resource->save();
     }
 
