@@ -1,0 +1,20 @@
+POST http://lms-new.gakken-idn.pro/api/login HTTP/1.1
+content-type: application/json
+
+{
+    "email":"student@gmail.com",
+    "password":"password",
+    "remember_me":1
+}
+##################################################
+GET {{url}}account/profile HTTP/1.1
+Authorization: {{token}}
+##################################################
+GET {{url}}classroom/php-101/quiz/list HTTP/1.1
+Authorization: {{token}}
+#################################################
+GET {{url}}classroom/invitation/join?classroom=php-101&token=d89ab3cbdc410709e70dc051b0747a2b&expires=1575429642&signature=0bb8050759accd8d6fbe82c5865d0513abf123c5e234aab459a58928c426802c HTTP/1.1
+Authorization: {{token}}
+#####################################################
+GET {{url}}classroom/php-101/assignment/view-assignment/8 HTTP/1.1
+Authorization: {{token}}

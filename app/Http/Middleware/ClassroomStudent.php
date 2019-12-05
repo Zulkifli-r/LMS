@@ -18,7 +18,7 @@ class ClassroomStudent
     {
         $classroom = \App\Classroom::getBySlug($request->slug);
         if (!auth('api')->user()->isClassroomStudent($classroom)) {
-            throw new UnauthorizeException();
+            throw new UnauthorizeException('You\'re not this classroom student');
         }
         return $next($request);
     }

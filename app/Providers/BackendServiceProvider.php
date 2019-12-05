@@ -19,7 +19,7 @@ class BackendServiceProvider extends ServiceProvider
         $this->app->bind(AccountRepository::class, function ($app) {
             $user = auth('api')->user();
             if ($user == null) {
-                throw new UnauthorizeException();
+                throw new UnauthorizeException('You\'re not logged in');
             }
             return new AccountRepository($user);
         });

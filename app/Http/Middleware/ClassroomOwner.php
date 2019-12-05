@@ -18,7 +18,7 @@ class ClassroomOwner
     {
         $classroom = \App\Classroom::getBySlug($request->slug);
         if (!auth('api')->user()->isClassroomOwner($classroom)) {
-            throw new UnauthorizeException();
+            throw new UnauthorizeException('You\'re not the class owner');
         }
         return $next($request);
     }

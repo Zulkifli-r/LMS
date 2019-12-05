@@ -17,7 +17,7 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (Auth::guard('api')->user() == null || ! $request->expectsJson()) {
-            throw new UnauthorizeException();
+            throw new UnauthorizeException('You\'re not logged in');
         }
 
     }

@@ -8,6 +8,7 @@ class UnauthorizeException extends Exception
 {
     public function render($request)
     {
-        return apiResponse(401,null, 'Unauthorized action, '.$this->message);
+        $message = $this->message?','.$this->message:'';
+        return apiResponse(401,null, 'Unauthorized action'. $message);
     }
 }
