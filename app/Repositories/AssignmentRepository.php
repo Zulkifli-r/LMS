@@ -26,6 +26,9 @@ class AssignmentRepository {
     public function __construct(Classroom $classroom, $teachable = null) {
         $this->classroom = $classroom;
         $this->teachable = $teachable?Teachable::findOrNotFound($teachable):null;
+        if ($this->teachable && $this->teachable->teachable_type != 'assignment') {
+            throw new NotFoundException('Assignment');
+        }
         $this->assignment = new \App\Assignment();
         // $this->classroomUser = $this->classroom->classroomUser();
     }

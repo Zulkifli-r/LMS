@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Classroom;
+use App\Exceptions\NotFoundException;
 use App\Exceptions\ValidationException;
 use App\Http\Resources\Quiz;
 use App\Http\Resources\QuizCollection;
@@ -20,6 +21,11 @@ class QuizRepository
     public function __construct(Classroom $classroom, $teachable = null) {
         $this->classroom = $classroom;
         $this->teachable = $teachable?Teachable::findOrNotFound($teachable):null;
+
+        if ($this->teachable && $this->teachable->teachable_type != 'quizz') {
+            throw new NotFoundException('Quiz');
+        }
+
         $this->quiz = new \App\Quiz();
     }
 
@@ -187,4 +193,5 @@ class QuizRepository
         $attempt = new QuizAttemptRepository($this->classroom, $this->teachable->quiz);
         return $attempt->update($request);
     }
+
 }

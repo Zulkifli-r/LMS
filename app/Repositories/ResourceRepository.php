@@ -23,6 +23,11 @@ class ResourceRepository
     public function __construct(Classroom $classroom, $teachable = null) {
         $this->classroom = $classroom;
         $this->teachable = $teachable?Teachable::findOrNotFound($teachable):null;
+
+        if ($this->teachable && $this->teachable->teachable_type != 'resource') {
+            throw new NotFoundException('Resource');
+        }
+
         $this->resource = new \App\Resource();
     }
 
