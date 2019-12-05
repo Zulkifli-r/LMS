@@ -97,7 +97,7 @@ class QuizAttempt extends JsonResource
         foreach ($questions as $key => $value) {
             $res[$key] = [
                 'id' => $value->id,
-                'type' => \Str::studly( $value->type ),
+                'type' => $value->type,
                 'typeLabel' => \Str::title( str_replace( '-', ' ', $value->type ) ),
                 'scoringMethod' => \Str::studly( $value->scoringMethod ),
                 'content' => $value->content,
