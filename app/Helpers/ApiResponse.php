@@ -1,12 +1,23 @@
 <?php
 
+use App\Exceptions\NotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+
 
 if (!function_exists('apiResponse')) {
-    function apiResponse($code, $data = null, $message = null){
+    function apiResponse($code, $data = null, $message = null, $force = false){
+        // dd(Str::contains(Route::current()->uri(),'classroom'));
+        $classroomStatus = [];
+
+        if (Str::contains(Route::current()->uri(),'classroom') && $force == true ) {
+            $classroomStatus = classroomStatus();
+        }
+
         $res_data = separatePagingAndData($data);
         $res_diag = httpResponse($code, $message);
-        return response(array_merge($res_data, $res_diag), 200);
+        return response(array_merge($res_data, $res_diag, $classroomStatus), 200);
     }
 }
 
@@ -98,5 +109,12 @@ if (!function_exists('responseMessage')) {
         }
 
         return implode(' ', $message);
+    }
+}
+
+if (!function_exists('classroomStatus')) {
+    function classroomStatus(){
+        $classroom = \App\Classroom::where('slug',Route::current()->slug);
+        return $classroom;
     }
 }

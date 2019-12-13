@@ -194,4 +194,11 @@ class QuizRepository
         return $attempt->update($request);
     }
 
+
+    public function submitAttempt($request)
+    {
+        $attempt = new QuizAttemptRepository($this->classroom, $this->teachable->quiz);
+        return $attempt->submit();
+    }
+
 }

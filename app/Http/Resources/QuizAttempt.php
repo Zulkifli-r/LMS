@@ -22,7 +22,6 @@ class QuizAttempt extends JsonResource
      */
     public function toArray($request)
     {
-
         if ($this->id) {
             $res = [
                 'id' => $this->id,
@@ -70,6 +69,10 @@ class QuizAttempt extends JsonResource
                 'answeredAt' => array_key_exists('answeredAt', $value) ?
                     \Carbon\Carbon::parse( $value->answeredAt )->toIso8601String() : null,
             ];
+
+            if ($this->includes->has('hideScore')) {
+                unset($res[$key]['score']);
+            }
 
             if (array_key_exists('questionType', $value)) {
                 switch( $value->questionType ) {

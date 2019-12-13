@@ -29,6 +29,7 @@ Route::group( ['namespace' => 'Api'], function(){
             Route::post('{slug}/update', 'ClassroomController@update');
             Route::get('{slug}/delete', 'ClassroomController@delete');
             Route::get('{slug}/hard-delete', 'ClassroomController@hardDelete');
+            Route::get('{slug}/user-status', 'ClassroomController@userStatus');
 
             Route::group(['prefix' => 'invitation'], function(){
                 Route::get('generate-public-invitation', 'InvitationController@generatePublicInvitation');
@@ -69,6 +70,7 @@ Route::group( ['namespace' => 'Api'], function(){
                     // Attempt
                     Route::post('{teachableId}/attempt', 'QuizController@attempt')->middleware('classroom-student');
                     Route::post('{teachableId}/update-attempt', 'QuizController@updateAttempt')->middleware('classroom-student');
+                    Route::post('{teachableId}/submit-attempt', 'QuizController@submitAttempt')->middleware('classroom-student');
                 });
 
                 Route::group(['prefix' => '{slug}/resource'], function(){

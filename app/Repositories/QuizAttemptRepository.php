@@ -35,11 +35,14 @@ class QuizAttemptRepository
             throw new UnauthorizeException('this quiz is not for you');
         }
 
-        $this->quizAttempt = \App\QuizAttempt::getByTeachableUserId($this->teachableUser->id);
+        $this->filterActiveQuiz();
 
         $previousAttempts = $this->teachableUser->quizAttempts;
 
         $unfinishedAttempt = $previousAttempts ? $previousAttempts->where( 'completed_at', null )->first():null;
+
+        $this->quizAttempt = $unfinishedAttempt ?? new \App\QuizAttempt();
+
 
         if ( !$unfinishedAttempt ) {
             $this->teachableUser->teachable->quiz->randomizeQuestions();
@@ -89,7 +92,7 @@ class QuizAttemptRepository
 
         switch ($request->context) {
             case 'answer':
-                // dd(collect( $request->answer ) , $this->quizAttempt);
+                $this->filterActiveQuiz();
                 $this->quizAttempt->answer( collect($request->answer) , $this->quizAttempt->grading_method );
                 break;
             case 'scoring':
@@ -103,11 +106,23 @@ class QuizAttemptRepository
 
         return new QuizAttempt($this->quizAttempt,[
             'answers' => true,
-            'questions' => true
+            'questions' => true,
+            'hideScore' => true
         ]);
 
     }
     // submit quiz attempt
+    public function submit()
+    {
+        $this->filterActiveQuiz();
+
+        $this->teachableUser = $this->user->teachableUser($this->classroom,$this->quiz)->first();
+        $this->quizAttempt = \App\QuizAttempt::getByTeachableUserId($this->teachableUser->id);
+        $this->quizAttempt->complete();
+        $this->teachableUser->complete();
+        return true;
+        // dd($this->teachableUser,$this->quizAttempt);
+    }
     // review quiz
     // quiz result
 
@@ -117,6 +132,12 @@ class QuizAttemptRepository
             'answer' => 'required_if:context,==,answer',
             'answer.questionId' => 'required_if:context,==,answer',
         ]);
+    }
+
+    private function filterActiveQuiz(){
+        if ( $this->teachable->available_at == null || $this->teachable->expires_at < \Carbon\Carbon::now()) {
+            throw new UnauthorizeException('quiz not available');
+        }
     }
 
 }

@@ -62,5 +62,10 @@ class ClassroomController extends Controller
         return apiResponse(200, $this->repository->removeStudent($request, $slug));
     }
 
+    public function userStatus($slug)
+    {
+        return apiResponse(200, $this->repository->userStatus($slug));
+    }
+
 
 }

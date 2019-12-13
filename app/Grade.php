@@ -17,7 +17,7 @@ class Grade extends Model
 
     public function teachableUser()
     {
-        return $this->belongsTo('App\Teachableuser');
+        return $this->belongsTo('App\TeachableUser');
     }
 
     public static function calculate( QuizAttempt $quizAttempt )
@@ -26,9 +26,11 @@ class Grade extends Model
         $answers = collect( json_decode( $quizAttempt->answers ) );
 
         $aggregate = $questions->reduce( function ( $aggregate, $question ) use ( $answers ) {
+
             $answer = $answers->filter( function ( $answer ) use ( $question ) {
                 return $answer->questionId == $question->id;
             } )->first();
+
             if ( isset( $answer->score ) )
                 return $aggregate + $answer->score;
             else {
@@ -55,7 +57,8 @@ class Grade extends Model
                             return $aggregate + 1;
                         break;
                     case 'fill-in':
-                        $correctAnswers = json_decode( $question->answers );
+                        // dd($question->answers);
+                        $correctAnswers = $question->answers;
                         if ( count( $answer->answers ) != count( $correctAnswers ) )
                             return $aggregate;
                         $correctlyAnsweredCount = 0;
@@ -65,6 +68,7 @@ class Grade extends Model
                         }
                         return $aggregate + ( $correctlyAnsweredCount / count( $correctAnswers ) );
                 }
+                // dd($aggregate);
                 return $aggregate;
             }
         }, 0 );
@@ -80,5 +84,12 @@ class Grade extends Model
         $this->save();
 
         return $this;
+    }
+
+    public function save(array $options = [])
+    {
+        $this->graded_by = auth('api')->user()->id;
+
+        parent::save($options);
     }
 }

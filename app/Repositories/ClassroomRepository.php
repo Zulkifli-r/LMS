@@ -9,6 +9,7 @@ use App\Http\Resources\Classes;
 use App\Http\Resources\Classroom as ClassroomResource;
 use App\Http\Resources\ClassroomCollection;
 use App\Http\Resources\ClassroomUserCollection;
+use App\Http\Resources\ClassroomUserStatus;
 use App\Http\Resources\UserCollection;
 use App\Repositories\Interfaces\ClassroomInterface;
 use App\Repositories\Traits\RequestParameter;
@@ -178,5 +179,11 @@ class ClassroomRepository implements ClassroomInterface
 
         $student->first()->delete();
         return true;
+    }
+
+    public function userStatus($slug)
+    {
+        $this->classroom = $this->classroom->getBySlug($slug);
+        return new ClassroomUserStatus($this->classroom);
     }
 }

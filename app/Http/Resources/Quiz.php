@@ -60,9 +60,11 @@ class Quiz extends JsonResource
             $user = auth('api')->user();
 
             if ($user->isClassroomStudent($this->classroom_id)) {
+
                 $teachableUser = $user->teachableUser($this->classroom,$this->quiz)->first();
                 $quizAttempt = \App\QuizAttempt::getByTeachableUserId($teachableUser->id);
-                $res['quiz_attempt'] = new QuizAttempt($quizAttempt, ['questions' => true, 'answers'=>true, 'progress' => true]);
+                $res['quiz_attempt'] = new QuizAttempt($quizAttempt, ['questions' => true, 'answers'=>true, 'progress' => true, 'hideScore' => true]);
+
             }
 
 

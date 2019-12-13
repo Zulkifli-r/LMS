@@ -19,6 +19,20 @@ class QuizAttempt extends Model
         return $this->belongsTo( 'App\TeachableUser');
     }
 
+    public function grades()
+    {
+        return $this->morphMany( 'App\Grade', 'gradeable' );
+    }
+
+    public static function getUncompletedByTeachableUserId($teachableUserId){
+        $quizAttempt = self::where('teachable_user_id', $teachableUserId);
+        if ($quizAttempt = $quizAttempt->first()) {
+            return $quizAttempt;
+        }
+
+        return (new self);
+    }
+
     public static function getByTeachableUserId($teachableUserId){
         $quizAttempt = self::where('teachable_user_id', $teachableUserId);
         if ($quizAttempt = $quizAttempt->first()) {
@@ -36,7 +50,7 @@ class QuizAttempt extends Model
         if ( !$question ) return $this;
 
         $answerMethod = 'answer' . \Str::studly( str_replace( '-', ' ', $question->type ) );
-
+        // dd($answerMethod);
 
         $newAnswers = $this->$answerMethod( $answer, $question , $gradingMethod );
 
@@ -114,7 +128,6 @@ class QuizAttempt extends Model
     public function complete()
     {
         $this->completed_at = \Carbon\Carbon::now();
-        $this->save();
 
         if ( $this->isGradeCalculatable() ) {
             $grade = $this->grades()->first() ?: new Grade;
@@ -123,7 +136,10 @@ class QuizAttempt extends Model
             $grade->comments = '';
             $grade->completed_at = $this->completed_at;
 
+            // dd($grade);
             $this->grades()->save( $grade );
+            $this->save();
+
         }
 
         return $this;

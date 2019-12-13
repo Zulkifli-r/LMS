@@ -35,7 +35,7 @@ class TeachableUser extends Pivot implements HasMedia
         if ( $this->completed_at != null )
             return $this;
 
-        $this->completed_at = $completedAt ? Carbon::parse( $completedAt ) : Carbon::now();
+        $this->completed_at = $completedAt ? \Carbon\Carbon::parse( $completedAt ) : \Carbon\Carbon::now();
         $this->save();
 
         return $this;

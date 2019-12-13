@@ -85,4 +85,9 @@ class QuizController extends Controller
     {
         return apiResponse(200, $this->repository->updateAttempt($request));
     }
+
+    public function submitAttempt(Request $request)
+    {
+        return apiResponse(200, $this->repository->submitAttempt($request), 'Thank you for submitting.');
+    }
 }
