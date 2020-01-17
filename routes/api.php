@@ -71,6 +71,7 @@ Route::group( ['namespace' => 'Api'], function(){
                     Route::post('{teachableId}/attempt', 'QuizController@attempt')->middleware('classroom-student');
                     Route::post('{teachableId}/update-attempt', 'QuizController@updateAttempt')->middleware('classroom-student');
                     Route::post('{teachableId}/submit-attempt', 'QuizController@submitAttempt')->middleware('classroom-student');
+                    Route::post('{teachableId}/scoring', 'QuizController@scoring')->middleware('classroom-teacher');
                 });
 
                 Route::group(['prefix' => '{slug}/resource'], function(){
